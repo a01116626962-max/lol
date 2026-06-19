@@ -3,87 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تفعيل اشتراك النظام</title>
+    <title>نظام السوبر ماركت الذكي - تجريبي</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #121212;
-            color: #ffffff;
+            background-color: #0f172a;
+            color: #f8fafc;
+            margin: 0;
+            padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
+            min-height: 100vh;
         }
-        .container {
-            background-color: #1e1e1e;
+
+        /* 🔒 شاشة قفل التفعيل */
+        #activation-screen {
+            background-color: #1e293b;
             padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
             text-align: center;
+            box-sizing: border-box;
         }
-        h2 { margin-bottom: 20px; color: #4f46e5; }
-        p { color: #aaa; font-size: 14px; }
+        h2 { color: #6366f1; margin-top: 0; }
+        .desc { color: #94a3b8; font-size: 14px; margin-bottom: 20px; }
+        
         input {
             width: 100%;
-            padding: 12px;
-            margin: 15px 0;
-            border: 2px solid #333;
-            border-radius: 6px;
-            background-color: #2a2a2a;
+            padding: 14px;
+            margin-bottom: 15px;
+            border: 2px solid #334155;
+            border-radius: 8px;
+            background-color: #0f172a;
             color: #fff;
-            font-size: 16px;
+            font-size: 18px;
             text-align: center;
             box-sizing: border-box;
             letter-spacing: 2px;
         }
-        input:focus { border-color: #4f46e5; outline: none; }
+        input:focus { border-color: #6366f1; outline: none; }
+        
         button {
             width: 100%;
-            padding: 12px;
-            background-color: #4f46e5;
+            padding: 14px;
+            background-color: #6366f1;
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 16px;
             cursor: pointer;
             font-weight: bold;
             transition: background 0.3s;
         }
-        button:hover { background-color: #4338ca; }
-        button:disabled { background-color: #555; cursor: not-allowed; }
-        .alert { display: none; padding: 12px; margin-top: 15px; border-radius: 6px; font-size: 14px; text-align: right; }
+        button:hover { background-color: #4f46e5; }
+        button:disabled { background-color: #475569; cursor: not-allowed; }
+
+        .alert { display: none; padding: 12px; margin-top: 15px; border-radius: 8px; font-size: 14px; text-align: right; }
         #success-box { background-color: #065f46; color: #34d399; border: 1px solid #047857; }
         #error-box { background-color: #991b1b; color: #f87171; border: 1px solid #b91c1c; }
-        #loading { display: none; color: #fbbf24; margin-top: 10px; font-size: 14px; }
+        #loading { display: none; color: #fbbf24; margin: 10px 0; font-size: 14px; }
+
+        /* 🏪 واجهة البرنامج الحقيقية (مخفية في البداية) */
+        #main-app {
+            display: none;
+            width: 90%;
+            max-width: 1000px;
+            background-color: #1e293b;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #334155;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        .badge { background-color: #10b981; color: white; padding: 5px 12px; border-radius: 20px; font-size: 12px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .card { background-color: #0f172a; padding: 20px; border-radius: 12px; text-align: center; border: 1px solid #334155; }
+        .card h3 { margin: 0 0 10px 0; color: #94a3b8; font-size: 16px; }
+        .card p { margin: 0; font-size: 24px; font-weight: bold; color: #38bdf8; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>🎫 تفعيل رخصة النظام</h2>
-    <p>أدخل كود التفعيل الذي استلمته لتجديد الاشتراك وزيادة الأيام.</p>
-    
-    <input type="text" id="code-input" placeholder="XXXX-XXXX-XXXX-XXXX" autocomplete="off">
-    
-    <button id="activate-btn" onclick="activateCode()">تفعيل الآن</button>
-    
-    <div id="loading">جاري الاتصال بالخادم والتحقق...</div>
-    
-    <div id="success-box" class="alert">
-        <strong id="success-message"></strong>
-        <div id="success-details" style="margin-top: 5px; font-size: 12px;"></div>
+    <div id="activation-screen">
+        <h2>🔒 نظام السوبر ماركت مغلق</h2>
+        <p class="desc">عذراً، تفعيل الاشتراك مطلوب للوصول إلى لوحة المبيعات والحسابات.</p>
+        
+        <input type="text" id="code-input" placeholder="XXXX-XXXX-XXXX-XXXX" autocomplete="off">
+        
+        <button id="activate-btn" onclick="activateCode()">تفعيل وترخيص البرنامج</button>
+        
+        <div id="loading">جاري التحقق من الكود وتمديد الصلاحية...</div>
+        
+        <div id="success-box" class="alert">
+            <strong id="success-message"></strong>
+            <div id="success-details" style="margin-top: 5px; font-size: 12px;"></div>
+        </div>
+        
+        <div id="error-box" class="alert">
+            <strong id="error-message"></strong>
+        </div>
     </div>
-    
-    <div id="error-box" class="alert">
-        <strong id="error-message"></strong>
+
+    <div id="main-app">
+        <div class="app-header">
+            <h2>🏪 لوحة تحكم السوبر ماركت الذكي</h2>
+            <span class="badge">النسخة كاملة - نشطة ✅</span>
+        </div>
+        
+        <p>مرحباً بك يا هندسة! تم تفعيل النظام بنجاح، وهذه هي بيانات المتجر التجريبية الحالية:</p>
+        
+        <div class="grid">
+            <div class="card">
+                <h3>إجمالي مبيعات اليوم</h3>
+                <p>1,250 ج.م</p>
+            </div>
+            <div class="card">
+                <h3>المنتجات في المخزن</h3>
+                <p>412 منتج</p>
+            </div>
+            <div class="card">
+                <h3>الطلبات المعلقة</h3>
+                <p>5 طلبات</p>
+            </div>
+            <div class="card">
+                <h3>صافي أرباح الشهر</h3>
+                <p>8,400 ج.م</p>
+            </div>
+        </div>
     </div>
-</div>
 
-<!-- ربط ملف الـ JavaScript اللي بيشغل الليلة -->
-<script src="js/activate.js"></script>
+    <script src="js/activate.js"></script>
 
+    <script>
+        // تعديل بسيط على دالة النجاح عشان تخفي شاشة القفل وتفتح السوبر ماركت فوراً عند التفعيل
+        const originalShowSuccess = showSuccess;
+        showSuccess = function(message, details) {
+            originalShowSuccess(message, details); // تشغيل الرسالة القديمة
+            
+            // استراحة ثانيتين عشان العميل يشوف رسالة النجاح، بعدين نفتح الموقع
+            setTimeout(() => {
+                document.getElementById('activation-screen').style.display = 'none';
+                document.getElementById('main-app').style.display = 'block';
+            }, 2000);
+        };
+    </script>
 </body>
 </html>
