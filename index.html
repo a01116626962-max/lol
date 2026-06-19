@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تفعيل اشتراك النظام</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #1e1e1e;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        h2 { margin-bottom: 20px; color: #4f46e5; }
+        p { color: #aaa; font-size: 14px; }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 15px 0;
+            border: 2px solid #333;
+            border-radius: 6px;
+            background-color: #2a2a2a;
+            color: #fff;
+            font-size: 16px;
+            text-align: center;
+            box-sizing: border-box;
+            letter-spacing: 2px;
+        }
+        input:focus { border-color: #4f46e5; outline: none; }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        button:hover { background-color: #4338ca; }
+        button:disabled { background-color: #555; cursor: not-allowed; }
+        .alert { display: none; padding: 12px; margin-top: 15px; border-radius: 6px; font-size: 14px; text-align: right; }
+        #success-box { background-color: #065f46; color: #34d399; border: 1px solid #047857; }
+        #error-box { background-color: #991b1b; color: #f87171; border: 1px solid #b91c1c; }
+        #loading { display: none; color: #fbbf24; margin-top: 10px; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🎫 تفعيل رخصة النظام</h2>
+    <p>أدخل كود التفعيل الذي استلمته لتجديد الاشتراك وزيادة الأيام.</p>
+    
+    <input type="text" id="code-input" placeholder="XXXX-XXXX-XXXX-XXXX" autocomplete="off">
+    
+    <button id="activate-btn" onclick="activateCode()">تفعيل الآن</button>
+    
+    <div id="loading">جاري الاتصال بالخادم والتحقق...</div>
+    
+    <div id="success-box" class="alert">
+        <strong id="success-message"></strong>
+        <div id="success-details" style="margin-top: 5px; font-size: 12px;"></div>
+    </div>
+    
+    <div id="error-box" class="alert">
+        <strong id="error-message"></strong>
+    </div>
+</div>
+
+<!-- ربط ملف الـ JavaScript اللي بيشغل الليلة -->
+<script src="js/activate.js"></script>
+
+</body>
+</html>
