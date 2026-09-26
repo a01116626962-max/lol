@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#2e7d32" />
+  <title>Imparo — مراجعة الجمل الإيطالية</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
+
+  <!-- ===== Splash / Loading ===== -->
+  <div id="splash" class="splash">
+    <div class="splash-logo">🇮🇹</div>
+    <div class="splash-title">Imparo</div>
+    <div class="spinner"></div>
+  </div>
+
+  <!-- ===== App Root ===== -->
+  <div id="app" class="app hidden">
+
+    <!-- ===== Header ===== -->
+    <header class="header">
+      <div class="header-left">
+        <button id="btn-theme" class="icon-btn" aria-label="تبديل الوضع">🌙</button>
+      </div>
+      <div class="header-center">
+        <span class="streak-badge">🔥 <span id="streak-count">0</span></span>
+      </div>
+      <div class="header-right">
+        <button id="btn-settings" class="icon-btn" aria-label="الإعدادات">⚙️</button>
+      </div>
+    </header>
+
+    <!-- ===== Views ===== -->
+    <main id="views">
+
+      <!-- ===== View: Dashboard ===== -->
+      <section id="view-dashboard" class="view active">
+        <div class="card hero-card">
+          <h1 class="hero-title">مرحباً بك 👋</h1>
+          <p class="hero-sub">جاهز لمراجعة اليوم؟</p>
+          <div class="stats-row">
+            <div class="stat">
+              <div class="stat-value" id="today-count">0</div>
+              <div class="stat-label">مراجعة اليوم</div>
+            </div>
+            <div class="stat">
+              <div class="stat-value" id="total-count">0</div>
+              <div class="stat-label">إجمالي الجمل</div>
+            </div>
+            <div class="stat">
+              <div class="stat-value" id="mistake-count">0</div>
+              <div class="stat-label">جمل صعبة</div>
+            </div>
+          </div>
+          <button id="btn-start-review" class="btn btn-primary btn-block">
+            ▶ بدء المراجعة اليومية
+          </button>
+        </div>
+
+        <!-- القوائم الأربع -->
+        <div class="lists-grid">
+          <button class="list-card" data-list="daily">
+            <div class="list-icon">📅</div>
+            <div class="list-title">المراجعة اليومية</div>
+            <div class="list-count" id="count-daily">0</div>
+          </button>
+          <button class="list-card" data-list="mistake">
+            <div class="list-icon">⚠️</div>
+            <div class="list-title">الجمل الصعبة</div>
+            <div class="list-count" id="count-mistake">0</div>
+          </button>
+          <button class="list-card" data-list="frozen">
+            <div class="list-icon">❄️</div>
+            <div class="list-title">المجمّدة</div>
+            <div class="list-count" id="count-frozen">0</div>
+          </button>
+          <button class="list-card" data-list="all">
+            <div class="list-icon">📚</div>
+            <div class="list-title">كل الجمل</div>
+            <div class="list-count" id="count-all">0</div>
+          </button>
+        </div>
+
+        <!-- Quick Add -->
+        <div class="card quick-add">
+          <h3 class="section-title">➕ إضافة سريعة</h3>
+          <input id="qa-it" type="text" class="input" placeholder="الجملة الإيطالية..." dir="ltr" />
+          <input id="qa-ar" type="text" class="input" placeholder="الترجمة العربية..." />
+          <button id="qa-add" class="btn btn-primary btn-block">إضافة جملة</button>
+        </div>
+      </section>
+
+      <!-- ===== View: Review ===== -->
+      <section id="view-review" class="view">
+        <div class="review-progress">
+          <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
+          <span id="progress-text" class="progress-text">0 / 0</span>
+        </div>
+
+        <div id="review-card" class="review-card">
+          <div id="card-it" class="card-it" dir="ltr"></div>
+          <button id="btn-speak" class="btn-speak" aria-label="إعادة النطق">🔊</button>
+          <div id="card-ar" class="card-ar hidden"></div>
+          <div class="card-hint" id="card-hint">اضغط على البطاقة لكشف الترجمة</div>
+        </div>
+
+        <div id="rating-actions" class="rating-actions hidden">
+          <button class="btn btn-hard" data-rating="hard">صعب</button>
+          <button class="btn btn-medium" data-rating="medium">متوسط</button>
+          <button class="btn btn-easy" data-rating="easy">سهل</button>
+        </div>
+
+        <button id="btn-review-back" class="btn btn-ghost">← عودة</button>
+      </section>
+
+      <!-- ===== View: List ===== -->
+      <section id="view-list" class="view">
+        <div class="list-header">
+          <button id="btn-list-back" class="icon-btn">←</button>
+          <h2 id="list-title" class="list-title-view">القائمة</h2>
+          <div class="list-actions" id="list-actions"></div>
+        </div>
+        <div id="list-content" class="list-content"></div>
+      </section>
+
+      <!-- ===== View: Summary ===== -->
+      <section id="view-summary" class="view">
+        <div class="card summary-card">
+          <div class="summary-emoji">🎉</div>
+          <h2>أحسنت!</h2>
+          <p class="summary-sub">أنهيت مراجعة اليوم</p>
+          <div class="summary-stats">
+            <div class="summary-stat"><span id="sum-total">0</span><small>بطاقة</small></div>
+            <div class="summary-stat easy"><span id="sum-easy">0</span><small>سهل</small></div>
+            <div class="summary-stat medium"><span id="sum-medium">0</span><small>متوسط</small></div>
+            <div class="summary-stat hard"><span id="sum-hard">0</span><small>صعب</small></div>
+          </div>
+          <div class="summary-duration">⏱ <span id="sum-duration">0:00</span></div>
+          <button id="btn-summary-home" class="btn btn-primary btn-block">العودة للرئيسية</button>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ===== Dictionary Popup ===== -->
+    <div id="dict-popup" class="dict-popup hidden">
+      <div class="dict-content">
+        <div class="dict-word" id="dict-word"></div>
+        <div class="dict-translation" id="dict-translation"></div>
+        <div class="dict-extra" id="dict-extra"></div>
+        <button id="dict-close" class="btn btn-ghost btn-sm">إغلاق</button>
+      </div>
+    </div>
+
+    <!-- ===== Toast ===== -->
+    <div id="toast" class="toast hidden"></div>
+
+    <!-- ===== Confirm Modal ===== -->
+    <div id="confirm-modal" class="modal hidden">
+      <div class="modal-content">
+        <p id="confirm-text">هل أنت متأكد؟</p>
+        <div class="modal-actions">
+          <button id="confirm-no" class="btn btn-ghost">إلغاء</button>
+          <button id="confirm-yes" class="btn btn-primary">تأكيد</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== Firebase SDK (compat for simplicity) ===== -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+  <!-- ===== App Scripts ===== -->
+  <script src="js/firebase.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/srs.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/dictionary.js"></script>
+  <script src="js/stats.js"></script>
+  <script src="js/export.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
