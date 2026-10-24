@@ -1,0 +1,1805 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<meta name="theme-color" content="#2d7a68" />
+<title>Imparo — مراجعة الإيطالية</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%232d7a68'/><text x='50' y='68' font-size='60' text-anchor='middle' fill='white' font-family='Georgia'>I</text></svg>">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+[hidden] { display: none !important; }
+
+:root {
+  --bg: #f7f5f0; --surface: #ffffff; --surface-2: #fbfaf7;
+  --primary: #2d7a68; --primary-dark: #1f5a4c; --primary-soft: #e4f1ed;
+  --easy: #4caf7d; --easy-soft: #e6f5ee;
+  --medium: #eba827; --medium-soft: #fdf3e0;
+  --hard: #e76f51; --hard-soft: #fbe8e2;
+  --skip: #8a9995;
+  --text: #23302c; --text-soft: #6b7a76; --border: #ece8e1;
+  --shadow-sm: 0 1px 3px rgba(30,45,40,.06);
+  --shadow-lg: 0 10px 30px rgba(30,45,40,.14);
+  --radius-sm: 12px; --radius: 16px; --radius-lg: 22px;
+}
+
+html, body {
+  height: 100%; background: var(--bg); color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Kufi Arabic", "Tahoma", sans-serif;
+  font-size: 15px; line-height: 1.5;
+  -webkit-font-smoothing: antialiased; overscroll-behavior-y: none;
+}
+body { min-height: 100vh; }
+
+.boot-screen, .error-screen {
+  position: fixed; inset: 0; z-index: 999; background: var(--bg);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 20px; padding: 24px; text-align: center;
+}
+.boot-logo { display: flex; align-items: center; gap: 10px; }
+.boot-logo h1 { font-size: 32px; font-weight: 800; color: var(--primary-dark); }
+.boot-logo .brand-dot { width: 16px; height: 16px; border-radius: 50%; background: var(--primary); box-shadow: 0 0 0 6px var(--primary-soft); }
+.boot-spinner { width: 38px; height: 38px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.boot-text { color: var(--text-soft); font-size: 14px; min-height: 20px; }
+.error-icon { font-size: 56px; }
+.error-screen h2 { font-size: 20px; font-weight: 800; color: var(--hard); }
+.error-screen p { color: var(--text-soft); font-size: 14px; max-width: 340px; line-height: 1.6; white-space: pre-wrap; }
+.error-screen .btn { max-width: 240px; }
+
+.app { max-width: 480px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; background: var(--bg); }
+.app-header {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px;
+  background: rgba(247,245,240,.88);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+.brand { display: flex; align-items: center; gap: 8px; }
+.brand-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--primary); box-shadow: 0 0 0 4px var(--primary-soft); }
+.brand h1 { font-size: 19px; font-weight: 700; letter-spacing: .3px; color: var(--primary-dark); }
+.header-meta { display: flex; align-items: center; gap: 10px; }
+.sync-dot { width: 9px; height: 9px; border-radius: 50%; background: #b9c7c3; transition: background .2s ease; }
+.sync-dot.online { background: var(--easy); box-shadow: 0 0 0 3px rgba(76,175,125,.2); }
+.sync-dot.syncing { background: var(--medium); box-shadow: 0 0 0 3px rgba(235,168,39,.2); animation: pulse 1s infinite; }
+.sync-dot.offline { background: var(--hard); }
+@keyframes pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.2);} }
+.streak-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #fff; padding: 6px 12px; border-radius: 999px;
+  border: 1px solid var(--border); font-weight: 700; font-size: 14px;
+  color: var(--hard); box-shadow: var(--shadow-sm);
+}
+.app-main { flex: 1; padding: 18px; padding-bottom: 40px; }
+.view { display: none; animation: fadeUp .28s ease; }
+.view.is-active { display: block; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+.stat-card {
+  background: var(--surface); border-radius: var(--radius);
+  padding: 14px 12px; text-align: center;
+  box-shadow: var(--shadow-sm); border: 1px solid var(--border);
+}
+.stat-value { font-size: 24px; font-weight: 800; color: var(--primary-dark); line-height: 1.2; }
+.stat-label { font-size: 12px; color: var(--text-soft); margin-top: 2px; }
+
+.btn {
+  border: none; border-radius: var(--radius);
+  padding: 14px 18px; font-family: inherit; font-size: 15px; font-weight: 700;
+  cursor: pointer; transition: transform .12s ease, box-shadow .2s ease, background .2s ease;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%;
+}
+.btn:active { transform: scale(.98); }
+.btn:disabled { opacity: .6; cursor: not-allowed; }
+.btn-primary { background: var(--primary); color: #fff; box-shadow: 0 6px 16px rgba(45,122,104,.28); }
+.btn-primary:hover:not(:disabled) { background: var(--primary-dark); }
+.btn-primary:disabled { background: #b9c7c3; box-shadow: none; }
+.btn-secondary { background: var(--primary-soft); color: var(--primary-dark); }
+.btn-secondary:hover:not(:disabled) { background: #d5ebe4; }
+.btn-icon { background: transparent; border: none; width: 38px; height: 38px; border-radius: 50%; font-size: 17px; color: var(--text); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: background .15s ease, opacity .2s ease; }
+.btn-icon:hover:not(:disabled) { background: rgba(0,0,0,.06); }
+.btn-icon:disabled { opacity: .35; cursor: not-allowed; }
+.btn-hero { padding: 20px 22px; border-radius: var(--radius-lg); font-size: 16px; justify-content: space-between; margin-bottom: 12px; }
+.btn-hero-count { background: rgba(255,255,255,.25); border-radius: 999px; padding: 3px 12px; font-size: 14px; font-weight: 800; }
+.btn-starred { padding: 14px 18px; border-radius: var(--radius); font-size: 14.5px; justify-content: space-between; margin-bottom: 18px; }
+
+.card { background: var(--surface); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); margin-bottom: 16px; }
+.section-title { font-size: 14px; font-weight: 700; color: var(--text-soft); margin-bottom: 12px; }
+.input {
+  width: 100%; border: 1px solid var(--border); background: var(--surface-2);
+  padding: 12px 14px; border-radius: var(--radius-sm);
+  font-family: inherit; font-size: 15px; color: var(--text); outline: none;
+  margin-bottom: 10px; transition: border-color .15s ease, background .15s ease;
+}
+.input:focus { border-color: var(--primary); background: #fff; }
+textarea.input { resize: vertical; min-height: 60px; }
+
+.lists-nav { display: flex; flex-direction: column; gap: 8px; }
+.list-btn {
+  display: flex; align-items: center; gap: 12px; width: 100%;
+  padding: 14px 16px; background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); cursor: pointer; font-family: inherit; font-size: 15px;
+  color: var(--text); text-align: right; box-shadow: var(--shadow-sm);
+  transition: transform .12s ease, border-color .15s ease;
+}
+.list-btn:hover { border-color: var(--primary); transform: translateY(-1px); }
+.list-icon { font-size: 18px; }
+.list-text { flex: 1; font-weight: 600; }
+.list-count { background: var(--primary-soft); color: var(--primary-dark); border-radius: 999px; padding: 2px 10px; font-size: 13px; font-weight: 700; min-width: 30px; text-align: center; }
+.list-btn[data-list="starred"] .list-count { background: #fff5d6; color: #a77a00; }
+
+.review-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+.review-progress { flex: 1; display: flex; align-items: center; gap: 10px; }
+.progress-track { flex: 1; height: 6px; background: var(--border); border-radius: 999px; overflow: hidden; }
+.progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--easy)); border-radius: 999px; transition: width .35s ease; }
+#progressText { font-size: 12.5px; color: var(--text-soft); font-weight: 700; white-space: nowrap; }
+.star-btn { font-size: 20px; transition: transform .15s ease, color .15s ease; }
+.star-btn.on { color: #f0a500; filter: drop-shadow(0 0 4px rgba(240,165,0,.35)); }
+.star-btn:active { transform: scale(.9); }
+.star-btn.pulse { animation: starPulse .4s ease; }
+@keyframes starPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.4); }
+  100% { transform: scale(1); }
+}
+.skip-header-btn { font-size: 18px; }
+.card-stage { perspective: 1400px; margin-bottom: 18px; }
+.flip-card { cursor: pointer; }
+.flip-card-inner { display: grid; transition: transform .6s cubic-bezier(.4,.2,.2,1); transform-style: preserve-3d; }
+.flip-card.is-flipped .flip-card-inner { transform: rotateY(180deg); }
+.flip-face {
+  grid-area: 1/1; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  background: var(--surface); border-radius: var(--radius-lg); padding: 28px 22px;
+  box-shadow: var(--shadow-lg); border: 1px solid var(--border);
+  min-height: 320px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+}
+.flip-back { transform: rotateY(180deg); background: linear-gradient(160deg, #ffffff, #f1faf6); }
+.sentence-it { font-size: 26px; font-weight: 700; line-height: 1.5; color: var(--text); text-align: center; direction: ltr; font-family: "Georgia", "Iowan Old Style", serif; }
+.sentence-it .word { display: inline-block; padding: 0 2px; border-radius: 6px; transition: background .15s ease, color .15s ease; cursor: pointer; }
+.sentence-it .word:hover, .sentence-it .word:active { background: var(--primary-soft); color: var(--primary-dark); }
+.sentence-ar { font-size: 22px; font-weight: 600; color: var(--primary-dark); text-align: center; line-height: 1.6; }
+.btn-speak { background: var(--primary-soft); color: var(--primary-dark); border: none; width: 52px; height: 52px; border-radius: 50%; font-size: 22px; cursor: pointer; box-shadow: var(--shadow-sm); transition: transform .15s ease, background .15s ease; }
+.btn-speak:active { transform: scale(.94); background: #d1e9e0; }
+.hint { font-size: 12.5px; color: var(--text-soft); }
+
+.rating-row { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; opacity: 0; pointer-events: none; transition: opacity .3s ease; }
+.rating-row.is-visible { opacity: 1; pointer-events: auto; }
+.btn-rating { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 13px 5px; border: none; border-radius: var(--radius); cursor: pointer; font-family: inherit; font-weight: 700; font-size: 12.5px; transition: transform .12s ease, box-shadow .2s ease, opacity .2s ease; box-shadow: var(--shadow-sm); }
+.btn-rating:active:not(:disabled) { transform: scale(.96); }
+.btn-rating:disabled { opacity: .4; cursor: not-allowed; box-shadow: none; }
+.rating-emoji { font-size: 20px; }
+.btn-hard { background: var(--hard-soft); color: #a94633; }
+.btn-medium { background: var(--medium-soft); color: #a76b0f; }
+.btn-easy { background: var(--easy-soft); color: #2c8159; }
+.btn-skip { background: var(--surface-2); color: var(--skip); border: 1.5px dashed #cfd6d3; box-shadow: none; }
+
+#view-summary { text-align: center; padding-top: 20px; }
+.summary-emoji { font-size: 64px; margin-bottom: 8px; animation: pop .5s ease; }
+@keyframes pop { 0%{transform:scale(0);} 60%{transform:scale(1.15);} 100%{transform:scale(1);} }
+.summary-title { font-size: 24px; font-weight: 800; color: var(--primary-dark); margin-bottom: 4px; }
+.summary-sub { color: var(--text-soft); margin-bottom: 22px; }
+.summary-stats { background: var(--surface); border-radius: var(--radius); padding: 18px; margin-bottom: 22px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); display: grid; grid-template-columns: 1fr 1fr; gap: 14px 8px; }
+.summary-item { display: flex; flex-direction: column; gap: 2px; }
+.summary-item .v { font-size: 22px; font-weight: 800; }
+.summary-item .l { font-size: 12px; color: var(--text-soft); }
+.summary-item.easy .v { color: var(--easy); }
+.summary-item.medium .v { color: var(--medium); }
+.summary-item.hard .v { color: var(--hard); }
+.summary-item.skip .v { color: var(--skip); }
+.summary-item.total .v { color: var(--primary-dark); }
+
+.list-header { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+.list-header h2 { font-size: 18px; font-weight: 800; }
+.list-actions { display: flex; gap: 8px; margin-bottom: 12px; }
+.list-actions .btn { flex: 1; padding: 10px 12px; font-size: 13.5px; border-radius: 12px; }
+.list-content { display: flex; flex-direction: column; gap: 10px; }
+.list-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; box-shadow: var(--shadow-sm); }
+.list-item-it { direction: ltr; text-align: left; font-family: "Georgia", serif; font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+.list-item-ar { font-size: 14.5px; color: var(--text-soft); margin-bottom: 8px; }
+.list-item-meta { display: flex; flex-wrap: wrap; gap: 6px; font-size: 11.5px; color: var(--text-soft); margin-bottom: 10px; }
+.badge { background: var(--surface-2); border: 1px solid var(--border); padding: 2px 8px; border-radius: 999px; }
+.badge.easy { background: var(--easy-soft); color: #2c8159; border-color: transparent; }
+.badge.medium { background: var(--medium-soft); color: #a76b0f; border-color: transparent; }
+.badge.hard { background: var(--hard-soft); color: #a94633; border-color: transparent; }
+.badge.frozen { background: #e8f1f8; color: #3a6a92; border-color: transparent; }
+.badge.starred { background: #fff5d6; color: #a77a00; border-color: transparent; }
+.list-item-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.mini-btn { border: none; border-radius: 10px; padding: 7px 10px; font-family: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer; background: var(--surface-2); color: var(--text); border: 1px solid var(--border); transition: transform .1s ease, background .15s ease; }
+.mini-btn:active { transform: scale(.96); }
+.mini-btn.ok { background: var(--easy-soft); color: #2c8159; border-color: transparent; }
+.mini-btn.no { background: var(--hard-soft); color: #a94633; border-color: transparent; }
+.mini-btn.freeze { background: #e8f1f8; color: #3a6a92; border-color: transparent; }
+.mini-btn.danger { background: #fbe8e2; color: #a94633; border-color: transparent; }
+.mini-btn.star-on { background: #fff5d6; color: #a77a00; border-color: transparent; }
+.mini-btn.edit { background: #eef3ff; color: #3a5ba8; border-color: transparent; }
+.empty-state { text-align: center; color: var(--text-soft); padding: 40px 12px; font-size: 14px; }
+.empty-state .em { font-size: 40px; display: block; margin-bottom: 10px; }
+
+.future-card { margin-bottom: 16px; }
+.future-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.future-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 10px 4px; background: var(--surface-2);
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  cursor: pointer; font-family: inherit;
+  color: var(--text-soft); transition: border-color .15s, transform .1s, background .15s;
+}
+.future-btn:hover:not(:disabled) { border-color: var(--primary); background: #fff; }
+.future-btn:active:not(:disabled) { transform: scale(.97); }
+.future-btn:disabled { opacity: .45; cursor: not-allowed; }
+.future-count { font-size: 18px; font-weight: 800; color: var(--primary-dark); line-height: 1.2; }
+.future-label { font-size: 11.5px; font-weight: 600; }
+
+.popup-overlay {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(20,30,28,.45); backdrop-filter: blur(3px);
+  display: none; align-items: center; justify-content: center;
+  padding: 16px; animation: fadeIn .2s ease;
+}
+.popup-overlay.is-open { display: flex; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+.dict-popup {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  width: 100%; max-width: 400px;
+  max-height: 88vh; overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  animation: slideUp .25s ease;
+  overflow-x: hidden;
+}
+.dict-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+}
+.dict-header-left { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 13px; }
+.dict-type-icon { font-size: 18px; line-height: 1; }
+.dict-type-label {
+  padding: 3px 11px; border-radius: 999px;
+  background: var(--surface); border: 1px solid var(--border);
+  font-size: 11.5px; font-weight: 700; letter-spacing: .3px;
+}
+.dict-header-main { padding: 14px 18px 6px; text-align: center; }
+.dict-word { font-size: 26px; font-weight: 800; color: var(--text); font-family: "Georgia", serif; margin-bottom: 4px; line-height: 1.2; }
+.dict-lemma { font-size: 13.5px; color: var(--text-soft); font-style: italic; font-family: "Georgia", serif; }
+.dict-body { padding: 8px 18px 18px; }
+.dict-meaning { font-size: 17px; font-weight: 600; padding: 12px 14px; background: var(--surface-2); border-radius: var(--radius-sm); margin-bottom: 12px; text-align: center; line-height: 1.6; }
+.dict-summary { padding: 12px 14px; border-radius: var(--radius-sm); margin-bottom: 12px; }
+.summary-label { font-size: 12px; font-weight: 800; margin-bottom: 6px; opacity: .9; letter-spacing: .2px; }
+.summary-text { font-size: 14px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; }
+
+.dict-popup[data-type="verb"] .dict-header { background: linear-gradient(135deg, #e0ecff, #c7d9ff); border-bottom-color: #b8ceff; }
+.dict-popup[data-type="verb"] .dict-type-label { background: #4a6ee0; color: #fff; border-color: transparent; }
+.dict-popup[data-type="verb"] .dict-word { color: #2a4cb5; }
+.dict-popup[data-type="verb"] .dict-lemma { color: #5a7ec0; }
+.dict-popup[data-type="verb"] .dict-meaning { background: #e8efff; color: #2a4cb5; }
+.dict-popup[data-type="verb"] .dict-summary-verb { background: #f0f4ff; border: 1px solid #c7d9ff; color: #2a4cb5; }
+.dict-popup[data-type="verb"] .dict-summary-verb .summary-label { color: #4a6ee0; }
+
+.dict-popup[data-type="preposition"] .dict-header { background: linear-gradient(135deg, #ffe8d4, #ffd4b3); border-bottom-color: #ffc094; }
+.dict-popup[data-type="preposition"] .dict-type-label { background: #e08a3a; color: #fff; border-color: transparent; }
+.dict-popup[data-type="preposition"] .dict-word { color: #a55a1a; }
+.dict-popup[data-type="preposition"] .dict-meaning { background: #fff0e0; color: #a55a1a; }
+.dict-popup[data-type="preposition"] .dict-summary-usage { background: #fff5eb; border: 1px solid #ffd4b3; border-right: 3px solid #e08a3a; color: #7a4210; }
+.dict-popup[data-type="preposition"] .dict-summary-usage .summary-label { color: #e08a3a; }
+
+.dict-popup[data-type="article"] .dict-header { background: linear-gradient(135deg, #d4f0e4, #b8e6d2); border-bottom-color: #9edcc0; }
+.dict-popup[data-type="article"] .dict-type-label { background: #3a9a6a; color: #fff; border-color: transparent; }
+.dict-popup[data-type="article"] .dict-word { color: #1f6a45; }
+.dict-popup[data-type="article"] .dict-meaning { background: #e6f7ee; color: #1f6a45; }
+.dict-popup[data-type="article"] .dict-summary-usage { background: #f0faf5; border: 1px solid #b8e6d2; border-right: 3px solid #3a9a6a; color: #1a5035; }
+.dict-popup[data-type="article"] .dict-summary-usage .summary-label { color: #3a9a6a; }
+
+.dict-popup[data-type="word"] .dict-summary-note { background: var(--surface-2); border: 1px solid var(--border); color: var(--text); }
+.dict-popup[data-type="word"] .dict-summary-note .summary-label { color: var(--primary-dark); }
+
+.dict-popup[data-type="form"] .dict-header { background: var(--primary-soft); border-bottom-color: #c7dfd6; }
+.dict-popup[data-type="form"] .dict-type-label { background: var(--primary); color: #fff; border-color: transparent; }
+.dict-popup[data-type="form"] .dict-word { font-size: 22px; }
+
+.dict-popup[data-type="loading"] .dict-header { background: var(--surface-2); }
+.dict-loading { text-align: center; color: var(--text-soft); padding: 24px 0; font-size: 14px; }
+.dict-loading::after {
+  content: ''; display: inline-block; width: 14px; height: 14px;
+  border: 2px solid var(--border); border-top-color: var(--primary);
+  border-radius: 50%; margin-inline-start: 8px; vertical-align: middle;
+  animation: spin .7s linear infinite;
+}
+
+.dict-field-label { display: block; font-size: 12.5px; font-weight: 700; color: var(--text-soft); margin-bottom: 4px; margin-top: 10px; }
+.dict-body .input { margin-bottom: 6px; }
+.btn-dict-edit {
+  background: var(--surface-2); color: var(--text-soft);
+  border: 1px solid var(--border);
+  padding: 9px 14px; border-radius: 10px;
+  font-family: inherit; font-size: 12.5px; font-weight: 700;
+  cursor: pointer; width: 100%; margin-top: 4px;
+  transition: background .15s ease;
+}
+.btn-dict-edit:hover { background: var(--border); }
+
+.verb-conj-block { background: #f0f4ff; border: 1px solid #c7d9ff; border-radius: var(--radius-sm); padding: 12px 14px; margin-bottom: 10px; }
+.verb-section-label { font-size: 12.5px; font-weight: 800; color: #4a6ee0; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+.verb-conj-table { display: flex; flex-direction: column; gap: 4px; }
+.verb-conj-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 11px; background: #fff; border-radius: 6px; font-size: 13.5px; border: 1.5px solid transparent; transition: border-color .2s ease, background .2s ease; }
+.verb-conj-row.active { background: #e0ecff; border-color: #4a6ee0; font-weight: 800; }
+.verb-pronoun { color: var(--text-soft); font-size: 12px; min-width: 55px; font-weight: 600; }
+.verb-form { font-family: "Georgia", serif; font-weight: 600; color: #2a4cb5; direction: ltr; }
+.verb-reflexive-block { background: #f5f0ff; border: 1px solid #d8ccf0; border-radius: var(--radius-sm); padding: 12px 14px; margin-top: 10px; }
+.verb-reflexive-block .verb-section-label { color: #7c4dcc; }
+.verb-reflexive-meaning { font-size: 13px; color: #5a3a99; margin-bottom: 8px; font-weight: 600; }
+.verb-reflexive-block .verb-conj-row.active { background: #ede5ff; border-color: #7c4dcc; }
+
+.verb-tense-block { background: #f0f4ff; border: 1px solid #c7d9ff; border-radius: var(--radius-sm); padding: 12px 14px; margin-bottom: 10px; transition: border-color .2s ease, box-shadow .2s ease; }
+.verb-tense-block:last-child { margin-bottom: 0; }
+.verb-tense-block.has-match { border-color: #4a6ee0; box-shadow: 0 0 0 2px rgba(74,110,224,.15); }
+.verb-tense-label { font-size: 12.5px; font-weight: 800; color: #4a6ee0; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+.verb-tense-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.verb-form-chip { background: #fff; border: 1.5px solid #d0dff5; border-radius: 8px; padding: 4px 9px; font-family: "Georgia", serif; font-size: 13px; font-weight: 600; color: #2a4cb5; direction: ltr; transition: all .15s ease; }
+.verb-form-chip.active { background: #4a6ee0; border-color: #4a6ee0; color: #fff; font-weight: 800; box-shadow: 0 2px 8px rgba(74,110,224,.3); transform: scale(1.05); }
+
+.toast {
+  position: fixed; bottom: 24px; left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: #23302c; color: #fff;
+  padding: 10px 18px; border-radius: 999px;
+  font-size: 13.5px; font-weight: 600;
+  z-index: 200; opacity: 0; pointer-events: none;
+  transition: opacity .25s ease, transform .25s ease;
+  max-width: 88vw; text-align: center;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast.ok { background: var(--easy); }
+.toast.err { background: var(--hard); }
+.toast.warn { background: var(--medium); color: #3a2c05; }
+</style>
+</head>
+<body>
+
+<div id="bootScreen" class="boot-screen">
+  <div class="boot-logo"><span class="brand-dot"></span><h1>Imparo</h1></div>
+  <div class="boot-spinner"></div>
+  <p class="boot-text" id="bootText">جاري التحميل…</p>
+</div>
+
+<div id="errorScreen" class="error-screen" hidden>
+  <div class="error-icon">⚠️</div>
+  <h2>تعذّر تشغيل التطبيق</h2>
+  <p id="errorMessage"></p>
+  <button class="btn btn-primary" onclick="location.reload()">إعادة المحاولة</button>
+</div>
+
+<div class="app" id="appRoot" hidden>
+
+  <header class="app-header">
+    <div class="brand"><span class="brand-dot"></span><h1>Imparo</h1></div>
+    <div class="header-meta">
+      <span class="sync-dot" id="syncDot" title="متصل بـ Firebase"></span>
+      <div class="streak-badge" title="الأيام المتتالية">
+        <span class="flame">🔥</span><span id="streakValue">0</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="app-main">
+
+    <section id="view-dashboard" class="view is-active">
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-value" id="statDue">0</div><div class="stat-label">مستحقة اليوم</div></div>
+        <div class="stat-card"><div class="stat-value" id="statReviewed">0</div><div class="stat-label">تمت مراجعتها</div></div>
+        <div class="stat-card"><div class="stat-value" id="statMistakes">0</div><div class="stat-label">جمل صعبة</div></div>
+        <div class="stat-card"><div class="stat-value" id="statFrozen">0</div><div class="stat-label">مجمّدة</div></div>
+      </div>
+
+      <button class="btn btn-primary btn-hero" id="btnStartReview">
+        <span class="btn-hero-label">ابدأ المراجعة اليومية</span>
+        <span class="btn-hero-count" id="heroCount">0</span>
+      </button>
+
+      <button class="btn btn-secondary btn-starred" id="btnStartStarredReview">
+        <span>⭐ مراجعة المميزة اليوم</span>
+        <span class="btn-hero-count" id="starredDueCount" style="background:rgba(240,165,0,.15); color:#a77a00;">0</span>
+      </button>
+
+      <div class="card quick-add">
+        <h3 class="section-title">➕ إضافة سريعة</h3>
+        <input type="text" id="inputItalian" class="input" placeholder="الجملة الإيطالية…" dir="ltr" autocomplete="off" />
+        <input type="text" id="inputArabic" class="input" placeholder="الترجمة العربية…" autocomplete="off" />
+        <button class="btn btn-secondary" id="btnQuickAdd">إضافة جملة إلى السحابة</button>
+      </div>
+
+      <div class="lists-nav">
+        <button class="list-btn" data-list="today"><span class="list-icon">📅</span><span class="list-text">المراجعة اليومية</span><span class="list-count" id="navTodayCount">0</span></button>
+        <button class="list-btn" data-list="starred"><span class="list-icon">⭐</span><span class="list-text">الجمل المميزة</span><span class="list-count" id="navStarredCount">0</span></button>
+        <button class="list-btn" data-list="mistakes"><span class="list-icon">⚠️</span><span class="list-text">الجمل الصعبة</span><span class="list-count" id="navMistakesCount">0</span></button>
+        <button class="list-btn" data-list="frozen"><span class="list-icon">❄️</span><span class="list-text">المجمّدة</span><span class="list-count" id="navFrozenCount">0</span></button>
+        <button class="list-btn" data-list="all"><span class="list-icon">📚</span><span class="list-text">كل الجمل</span><span class="list-count" id="navAllCount">0</span></button>
+      </div>
+
+      <div class="card future-card" style="margin-top:16px;">
+        <h3 class="section-title">📅 الأيام القادمة (معاينة مبكرة)</h3>
+        <div class="future-grid" id="futureGrid"></div>
+      </div>
+    </section>
+
+    <section id="view-review" class="view">
+      <div class="review-header">
+        <button class="btn-icon" id="btnExitReview" aria-label="خروج">✕</button>
+        <div class="review-progress">
+          <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+          <span id="progressText">0 / 0</span>
+        </div>
+        <button class="btn-icon skip-header-btn" id="btnSkipHeader" title="تخطي البطاقة" aria-label="تخطي">⏭️</button>
+        <button class="btn-icon star-btn" id="btnStarCurrent" title="تمييز البطاقة" aria-label="تمييز">☆</button>
+      </div>
+
+      <div class="card-stage">
+        <div class="flip-card" id="flipCard">
+          <div class="flip-card-inner">
+            <div class="flip-face flip-front">
+              <div class="sentence-it" id="cardItalian"></div>
+              <button class="btn-speak" id="btnSpeak" title="إعادة النطق">🔊</button>
+              <div class="hint">اضغط لكشف الترجمة</div>
+            </div>
+            <div class="flip-face flip-back">
+              <div class="sentence-ar" id="cardArabic"></div>
+              <div class="hint">قيّم مستوى صعوبة البطاقة</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rating-row" id="ratingRow">
+        <button class="btn-rating btn-hard" data-rating="hard"><span class="rating-emoji">😰</span><span class="rating-label">صعب</span></button>
+        <button class="btn-rating btn-medium" data-rating="medium"><span class="rating-emoji">🙂</span><span class="rating-label">متوسط</span></button>
+        <button class="btn-rating btn-easy" data-rating="easy"><span class="rating-emoji">😎</span><span class="rating-label">سهل</span></button>
+        <button class="btn-rating btn-skip" data-rating="skip"><span class="rating-emoji">⏭️</span><span class="rating-label">تخطي</span></button>
+      </div>
+    </section>
+
+    <section id="view-summary" class="view">
+      <div class="summary-emoji">🎉</div>
+      <h2 class="summary-title">أحسنت!</h2>
+      <p class="summary-sub" id="summarySub">أكملت مراجعة اليوم</p>
+      <div class="summary-stats" id="summaryStats"></div>
+      <button class="btn btn-secondary" id="btnReviewHard" style="margin-bottom:10px; display:none;">🔁 أعد مراجعة الأصعب</button>
+      <button class="btn btn-primary" id="btnBackHome">العودة للرئيسية</button>
+    </section>
+
+    <section id="view-list" class="view">
+      <div class="list-header">
+        <button class="btn-icon" id="btnBackList" aria-label="رجوع">←</button>
+        <h2 id="listTitle">القائمة</h2>
+      </div>
+      <div class="list-actions" id="listActions"></div>
+      <div class="list-content" id="listContent"></div>
+    </section>
+
+  </main>
+
+  <div class="popup-overlay" id="popupOverlay">
+    <div class="popup" id="popupDict"></div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<script>
+/* =========================================================
+   Imparo — Friend Edition (v2.4-Friend) — Complete Isolation
+   ========================================================= */
+(function () {
+  'use strict';
+
+  /* =========================================================
+     CONFIG — حساب صديقك (منفصل تمامًا)
+     ========================================================= */
+  const FIREBASE_CONFIG = {
+    apiKey:            "AIzaSyAViYDMBtjyUz8OrqlYQ2JmLroYNacEsGw",
+    authDomain:        "a222-912ce.firebaseapp.com",
+    projectId:         "a222-912ce",
+    storageBucket:     "a222-912ce.firebasestorage.app",
+    messagingSenderId: "195818872560",
+    appId:             "1:195818872560:web:e6e490067246a47f1b6c35"
+  };
+  const USER_ID = "friend_imparo_a222_912ce_n4m8k2p7v9x3_admin";
+
+  const SRS = (function () {
+    const REVIEW_HOUR = 10;
+    const EASY_STREAK_MAX = 4;
+    const EASY_DAYS = 7;
+    const EASY_LONG_DAYS = 30;
+    const MEDIUM_DAYS = 2;
+    const MEDIUM_STREAK_MAX = 4;
+
+    function startOfReviewDay(now = new Date()) {
+      const d = new Date(now);
+      if (d.getHours() < REVIEW_HOUR) d.setDate(d.getDate() - 1);
+      d.setHours(0, 0, 0, 0);
+      return d;
+    }
+    function reviewDayKey(now = new Date()) {
+      const d = startOfReviewDay(now);
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    }
+    function scheduleIn(daysAhead, now = new Date()) {
+      const d = new Date(now);
+      d.setDate(d.getDate() + daysAhead);
+      d.setHours(REVIEW_HOUR, 0, 0, 0);
+      return d.getTime();
+    }
+    function isDue(s, now = Date.now()) {
+      if (!s) return false;
+      if (s.is_frozen) return false;
+      if (s.in_mistake_bank) return false;
+      return (s.next_review || 0) <= now;
+    }
+    function applyEasy(s, now = new Date()) {
+      const streak = (s.easy_streak || 0) + 1;
+      const days = streak > EASY_STREAK_MAX ? EASY_LONG_DAYS : EASY_DAYS;
+      return { next_review: scheduleIn(days, now), easy_streak: streak, medium_streak: 0, in_mistake_bank: false, last_reviewed: now.getTime() };
+    }
+    function applyMedium(s, now = new Date()) {
+      const mStreak = Math.min((s.medium_streak || 0) + 1, MEDIUM_STREAK_MAX);
+      return { next_review: scheduleIn(MEDIUM_DAYS, now), medium_streak: mStreak, easy_streak: 0, in_mistake_bank: false, last_reviewed: now.getTime() };
+    }
+    function applyHard(s, now = new Date()) {
+      return { next_review: scheduleIn(1, now), easy_streak: 0, medium_streak: 0, in_mistake_bank: true, last_reviewed: now.getTime() };
+    }
+    function applyCorrectFromMistakes(s, now = new Date()) {
+      return { next_review: scheduleIn(1, now), in_mistake_bank: false, easy_streak: 0, medium_streak: 0, last_reviewed: now.getTime() };
+    }
+    function applyWrongFromMistakes(s, now = new Date()) {
+      return { next_review: scheduleIn(1, now), easy_streak: 0, medium_streak: 0, in_mistake_bank: true, last_reviewed: now.getTime() };
+    }
+    return { REVIEW_HOUR, startOfReviewDay, reviewDayKey, scheduleIn, isDue, applyEasy, applyMedium, applyHard, applyCorrectFromMistakes, applyWrongFromMistakes };
+  })();
+
+  const Speech = (function () {
+    const supported = 'speechSynthesis' in window;
+    let voices = [], voicesReady = false, fallbackHandler = null, warnedOnce = false, cachedVoice = null;
+
+    function loadVoices() {
+      if (!supported) return;
+      try { voices = window.speechSynthesis.getVoices() || []; voicesReady = voices.length > 0; }
+      catch (err) { console.warn('[Speech] loadVoices:', err); }
+    }
+    if (supported) {
+      loadVoices();
+      window.speechSynthesis.onvoiceschanged = () => { loadVoices(); cachedVoice = null; };
+      setTimeout(loadVoices, 300);
+      setTimeout(loadVoices, 1200);
+    }
+    function pickItalianVoice() {
+      if (cachedVoice) return cachedVoice;
+      if (!voicesReady) loadVoices();
+      let v = voices.find(x => (x.lang || '').replace('_', '-').toLowerCase() === 'it-it');
+      if (v) return (cachedVoice = { voice: v, tier: 'exact' });
+      v = voices.find(x => /^it([-_]|$)/i.test(x.lang || ''));
+      if (v) return (cachedVoice = { voice: v, tier: 'italian' });
+      v = voices.find(x => /ital/i.test(x.name || ''));
+      if (v) return (cachedVoice = { voice: v, tier: 'name-based' });
+      return (cachedVoice = { voice: null, tier: 'none' });
+    }
+    function speak(text) {
+      if (!text || !text.trim()) return;
+      if (!supported) { notifyFallback('هذا المتصفح لا يدعم النطق الصوتي.'); return; }
+      try {
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        const pick = pickItalianVoice();
+        if (pick.voice) { u.voice = pick.voice; u.lang = pick.voice.lang || 'it-IT'; }
+        else { u.lang = 'it-IT'; if (!warnedOnce) { warnedOnce = true; notifyFallback('لا يتوفر صوت إيطالي — سيُستخدم الصوت الافتراضي.'); } }
+        u.rate = 0.9; u.pitch = 1; u.volume = 1;
+        u.onerror = (e) => console.warn('[Speech] error:', e.error || e);
+        window.speechSynthesis.speak(u);
+      } catch (err) { console.warn('[Speech] speak:', err); notifyFallback('تعذّر تشغيل النطق.'); }
+    }
+    function notifyFallback(msg) { if (typeof fallbackHandler === 'function') { try { fallbackHandler(msg); } catch(_){} } }
+    function setFallbackHandler(fn) { fallbackHandler = fn; }
+    function cancel() { if (supported) { try { window.speechSynthesis.cancel(); } catch(_){} } }
+    return { speak, setFallbackHandler, cancel };
+  })();
+
+  const Store = (function () {
+    let db = null, uid = null, ready = false;
+    function ensureReady() { if (!ready) throw new Error('Store غير مهيأ.'); }
+
+    async function init(onStatus) {
+      if (!window.firebase) throw new Error('مكتبات Firebase غير محمّلة.');
+      if (!FIREBASE_CONFIG.apiKey || /^YOUR_/.test(FIREBASE_CONFIG.apiKey)) throw new Error('اضبط مفاتيح Firebase.');
+      if (!USER_ID || USER_ID.length < 8) throw new Error('USER_ID غير صالح.');
+
+      if (onStatus) onStatus('جارٍ الاتصال بقاعدة البيانات…');
+      if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+      db = firebase.firestore();
+      uid = USER_ID;
+      ready = true;
+
+      try { await db.enablePersistence({ synchronizeTabs: true }); }
+      catch (e) { console.warn('[Store] persistence:', e.code || e.message); }
+
+      if (onStatus) onStatus('جارٍ التحقق من المسار…');
+      try { await db.collection('users').doc(uid).get(); }
+      catch (err) {
+        throw new Error('فشل الوصول للقاعدة [' + (err.code || 'unknown') + ']: ' + (err.message || 'تحقق من القواعد'));
+      }
+      console.info('[Store] جاهز. USER_ID =', uid);
+      return uid;
+    }
+
+    function userRef() { ensureReady(); return db.collection('users').doc(uid); }
+    function sentencesCol() { ensureReady(); return userRef().collection('sentences'); }
+    function dictCol() { ensureReady(); return userRef().collection('dictionary'); }
+    function verbsCol() { ensureReady(); return userRef().collection('verbs'); }
+
+    const defaultUser = () => ({ streak: 0, last_review_day: null, reviewed_today: 0, reviewed_day_key: null, created_at: Date.now(), updated_at: Date.now() });
+
+    async function loadUser() {
+      ensureReady();
+      const ref = userRef(); const snap = await ref.get();
+      if (!snap.exists) { const d = defaultUser(); await ref.set(d, { merge: true }); return d; }
+      return Object.assign(defaultUser(), snap.data());
+    }
+    async function saveUser(patch) {
+      ensureReady();
+      await userRef().set(Object.assign({}, patch, { updated_at: Date.now() }), { merge: true });
+    }
+
+    async function loadSentences() {
+      ensureReady();
+      const snap = await sentencesCol().get();
+      return snap.docs.map(d => Object.assign({ id: d.id }, d.data()));
+    }
+    async function addSentence(data) {
+      ensureReady();
+      const ref = await sentencesCol().add(Object.assign({}, data));
+      return Object.assign({ id: ref.id }, data);
+    }
+    async function updateSentence(id, patch) { ensureReady(); await sentencesCol().doc(id).set(patch, { merge: true }); }
+    async function deleteSentence(id) { ensureReady(); await sentencesCol().doc(id).delete(); }
+
+    function normalizeKey(word) {
+      return String(word || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^\p{L}']/gu, '').trim();
+    }
+
+    async function loadDictionary() {
+      ensureReady();
+      const snap = await dictCol().get();
+      const dict = {};
+      snap.docs.forEach(d => { dict[d.id] = Object.assign({ id: d.id }, d.data() || {}); });
+      return dict;
+    }
+
+    async function loadVerbs() {
+      ensureReady();
+      const snap = await verbsCol().get();
+      return snap.docs.map(d => Object.assign({ id: d.id }, d.data() || {}));
+    }
+
+    async function getDictionaryEntry(wordKey) {
+      ensureReady();
+      const snap = await dictCol().doc(wordKey).get();
+      return snap.exists ? Object.assign({ id: snap.id }, snap.data()) : null;
+    }
+
+    async function saveDictionaryEntry(wordKey, entry) {
+      ensureReady();
+      if (!wordKey) return;
+      await dictCol().doc(wordKey).set(Object.assign({}, entry, { updated_at: Date.now() }), { merge: true });
+    }
+
+    function getUid() { return uid; }
+
+    return { init, loadUser, saveUser, loadSentences, addSentence, updateSentence, deleteSentence, loadDictionary, loadVerbs, getDictionaryEntry, saveDictionaryEntry, normalizeKey, getUid };
+  })();
+
+  const state = {
+    user: null, sentences: [], dict: {},
+    sentencesById: new Map(),
+    verbs: [], verbFormsIndex: new Map(),
+    queue: [],
+    initialQueue: [],
+    ratedCount: 0,
+    skippedCount: 0,
+    skipCounts: new Map(),
+    flipped: false,
+    session: { easy: 0, medium: 0, hard: 0 },
+    listMode: null,
+    busy: false
+  };
+
+  const $ = sel => document.querySelector(sel);
+  const $$ = sel => Array.from(document.querySelectorAll(sel));
+  const escapeHtml = s => String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+
+  let toastTimer = null;
+  function toast(msg, type = 'info') {
+    const el = $('#toast'); if (!el) return;
+    el.textContent = msg;
+    el.className = 'toast show' + (type === 'ok' ? ' ok' : type === 'err' ? ' err' : type === 'warn' ? ' warn' : '');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
+  }
+
+  function setSync(s) { const d = $('#syncDot'); if (d) d.className = 'sync-dot ' + (s || ''); }
+
+  function showView(name) {
+    $$('.view').forEach(v => v.classList.remove('is-active'));
+    const el = document.getElementById('view-' + name);
+    if (el) el.classList.add('is-active');
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }
+
+  const dueToday = () => state.sentences.filter(s => SRS.isDue(s));
+  const mistakesList = () => state.sentences.filter(s => s.in_mistake_bank && !s.is_frozen);
+  const frozenList = () => state.sentences.filter(s => s.is_frozen);
+
+  function getFutureDaySentences(offsetDays) {
+    const now = new Date();
+    const start = new Date(now);
+    start.setDate(start.getDate() + offsetDays);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(start);
+    end.setDate(end.getDate() + 1);
+    const startTs = start.getTime(), endTs = end.getTime();
+    return state.sentences.filter(s => {
+      if (!s || s.is_frozen || s.in_mistake_bank) return false;
+      const nr = s.next_review || 0;
+      return nr >= startTs && nr < endTs;
+    });
+  }
+
+  function extractFormsFromVerbSummary(summary) {
+    const forms = new Set();
+    if (!summary) return [];
+    const sections = String(summary).split(/\s*\|\s*|\n+/).filter(Boolean);
+    sections.forEach(section => {
+      const colonIdx = section.indexOf(':');
+      const content = colonIdx >= 0 ? section.substring(colonIdx + 1) : section;
+      content.split(/[,،؛;]/).forEach(chunk => {
+        let text = chunk.trim();
+        if (!text) return;
+        text = text.replace(/^(io|tu|lui\/lei|lui|lei|noi|voi|loro|mi|ti|si|ci|vi)\s+/i, '');
+        const words = text.match(/[\p{Script=Latin}']+/gu) || [];
+        if (words.length) {
+          const lastWord = words[words.length - 1];
+          if (lastWord.length > 1) {
+            const norm = Store.normalizeKey(lastWord);
+            if (norm) forms.add(norm);
+          }
+        }
+      });
+    });
+    return Array.from(forms);
+  }
+
+  function parseVerbSummary(summary) {
+    if (!summary) return [];
+    const sections = String(summary).split(/\s*\|\s*|\n+/).filter(Boolean);
+    const result = [];
+    sections.forEach(section => {
+      const colonIdx = section.indexOf(':');
+      if (colonIdx < 0) {
+        const forms = section.split(/[,،؛;]/).map(s => s.trim()).filter(Boolean);
+        if (forms.length) result.push({ label: 'التصريفات', forms });
+        return;
+      }
+      const label = section.substring(0, colonIdx).trim();
+      const content = section.substring(colonIdx + 1).trim();
+      const forms = content.split(/[,،؛;]/).map(chunk => {
+        let text = chunk.trim();
+        if (!text) return null;
+        text = text.replace(/^(io|tu|lui\/lei|lui|lei|noi|voi|loro|mi|ti|si|ci|vi)\s+/i, '');
+        const words = text.match(/[\p{Script=Latin}']+/gu) || [];
+        if (!words.length) return null;
+        return words.join(' ');
+      }).filter(Boolean);
+      if (forms.length) result.push({ label, forms });
+    });
+    return result;
+  }
+
+  function buildVerbFormsIndex() {
+    const index = new Map();
+    state.verbs.forEach(verb => {
+      const forms = new Set();
+      const add = (s) => { if (!s) return; const k = Store.normalizeKey(s); if (k) forms.add(k); };
+      const addReflexive = (s) => {
+        if (!s) return;
+        add(s);
+        const parts = String(s).trim().split(/\s+/);
+        add(parts[parts.length - 1]);
+      };
+      add(verb.infinitive);
+      if (verb.present) Object.values(verb.present).forEach(add);
+      add(verb.reflexive_infinitive);
+      if (verb.present_reflexive) Object.values(verb.present_reflexive).forEach(addReflexive);
+      forms.forEach(form => {
+        if (form && !index.has(form)) index.set(form, { source: 'manual', verb });
+      });
+    });
+
+    Object.entries(state.dict).forEach(([key, entry]) => {
+      if (!entry || entry.type !== 'verb') return;
+      const forms = new Set();
+      const add = (s) => { if (!s) return; const k = Store.normalizeKey(s); if (k) forms.add(k); };
+      add(entry.word); add(entry.lemma); add(key);
+      extractFormsFromVerbSummary(entry.summary).forEach(f => forms.add(f));
+      forms.forEach(form => {
+        if (form && !index.has(form)) index.set(form, { source: 'dict', entry, key });
+      });
+    });
+
+    state.verbFormsIndex = index;
+    const dictVerbsCount = Object.values(state.dict).filter(e => e && e.type === 'verb').length;
+    console.info(`[VerbIndex] ${state.verbs.length} يدوي + ${dictVerbsCount} قاموس → ${index.size} صيغة مفهرسة`);
+  }
+
+  function resetDailyCounterIfNeeded() {
+    const todayKey = SRS.reviewDayKey();
+    if (state.user.reviewed_day_key !== todayKey) {
+      state.user.reviewed_day_key = todayKey;
+      state.user.reviewed_today = 0;
+    }
+  }
+  function bumpStreakIfFirstReviewOfDay() {
+    const todayKey = SRS.reviewDayKey();
+    if (state.user.last_review_day === todayKey) return;
+    if (state.user.last_review_day) {
+      const y = new Date(); y.setDate(y.getDate() - 1);
+      const yKey = SRS.reviewDayKey(y);
+      state.user.streak = state.user.last_review_day === yKey ? (state.user.streak || 0) + 1 : 1;
+    } else { state.user.streak = 1; }
+    state.user.last_review_day = todayKey;
+  }
+
+  function renderDashboard() {
+    resetDailyCounterIfNeeded();
+    const due = dueToday().length;
+    const mistakes = mistakesList().length;
+    const frozen = frozenList().length;
+    const starred = state.sentences.filter(s => s.is_starred).length;
+    const starredDue = dueToday().filter(s => s.is_starred).length;
+    const total = state.sentences.length;
+
+    $('#statDue').textContent = due;
+    $('#statReviewed').textContent = state.user.reviewed_today || 0;
+    $('#statMistakes').textContent = mistakes;
+    $('#statFrozen').textContent = frozen;
+    $('#heroCount').textContent = due;
+    $('#navTodayCount').textContent = due;
+    $('#navStarredCount').textContent = starred;
+    $('#navMistakesCount').textContent = mistakes;
+    $('#navFrozenCount').textContent = frozen;
+    $('#navAllCount').textContent = total;
+    $('#streakValue').textContent = state.user.streak || 0;
+
+    const btn = $('#btnStartReview');
+    btn.disabled = due === 0;
+    btn.classList.toggle('btn-primary', due > 0);
+    btn.classList.toggle('btn-secondary', due === 0);
+
+    const starredBtn = $('#btnStartStarredReview');
+    if (starredBtn) {
+      $('#starredDueCount').textContent = starredDue;
+      starredBtn.disabled = starredDue === 0;
+    }
+
+    renderFutureGrid();
+  }
+
+  function renderFutureGrid() {
+    const grid = $('#futureGrid');
+    if (!grid) return;
+    const labels = ['غدًا', 'يومان', '3 أيام', '4 أيام', '5 أيام', '6 أيام'];
+    grid.innerHTML = '';
+    for (let i = 1; i <= 6; i++) {
+      const count = getFutureDaySentences(i).length;
+      const btn = document.createElement('button');
+      btn.className = 'future-btn';
+      btn.disabled = count === 0;
+      btn.innerHTML = `<span class="future-count">${count}</span><span class="future-label">${labels[i-1]}</span>`;
+      btn.addEventListener('click', () => {
+        if (count === 0) return;
+        const q = getFutureDaySentences(i);
+        toast(`مراجعة مبكرة: ${q.length} بطاقة — ستُحسب كمراجعة اليوم`);
+        startReview(q);
+      });
+      grid.appendChild(btn);
+    }
+  }
+
+  async function quickAdd() {
+    if (state.busy) return;
+    const italian = $('#inputItalian').value.trim();
+    const arabic = $('#inputArabic').value.trim();
+    if (!italian || !arabic) { toast('أكمل الحقلين من فضلك', 'err'); return; }
+
+    state.busy = true; setSync('syncing');
+    const payload = {
+      italian, arabic,
+      next_review: Date.now() - 1,
+      easy_streak: 0, medium_streak: 0,
+      in_mistake_bank: false, is_frozen: false,
+      is_starred: false,
+      created_at: Date.now(), last_reviewed: null
+    };
+    try {
+      const saved = await Store.addSentence(payload);
+      state.sentences.push(saved);
+      state.sentencesById.set(saved.id, saved);
+      $('#inputItalian').value = ''; $('#inputArabic').value = '';
+      toast('تمت إضافة الجملة إلى السحابة ✓', 'ok');
+      renderDashboard(); $('#inputItalian').focus(); setSync('online');
+    } catch (err) { console.error(err); toast('فشل الحفظ', 'err'); setSync('offline'); }
+    finally { state.busy = false; }
+  }
+
+  function startReview(queueOrMode) {
+    let queue;
+    if (Array.isArray(queueOrMode)) queue = queueOrMode.slice();
+    else if (queueOrMode === 'starred') queue = dueToday().filter(s => s.is_starred);
+    else queue = dueToday();
+
+    if (queue.length === 0) { toast('لا توجد بطاقات للمراجعة'); return; }
+    state.queue = queue;
+    state.initialQueue = queue.slice();
+    state.ratedCount = 0;
+    state.skippedCount = 0;
+    state.skipCounts = new Map();
+    state.session = { easy: 0, medium: 0, hard: 0 };
+    state.busy = false;
+    showView('review');
+    renderCard();
+  }
+
+  function updateStarButton(silent = false) {
+    const btn = $('#btnStarCurrent');
+    if (!btn) return;
+    const s = state.queue[0];
+    if (!s) { btn.textContent = '☆'; btn.classList.remove('on'); return; }
+    const starred = !!s.is_starred;
+    const wasOn = btn.classList.contains('on');
+    btn.textContent = starred ? '⭐' : '☆';
+    btn.classList.toggle('on', starred);
+    if (!silent && starred && !wasOn) {
+      btn.classList.remove('pulse');
+      void btn.offsetWidth;
+      btn.classList.add('pulse');
+      setTimeout(() => btn.classList.remove('pulse'), 420);
+    }
+  }
+
+  function updateSkipHeaderButton() {
+    const btn = $('#btnSkipHeader');
+    if (!btn) return;
+    const isLast = state.queue.length <= 1;
+    btn.disabled = isLast;
+    btn.title = isLast ? 'هذه آخر بطاقة — قيّمها' : 'تخطي البطاقة (تأجيل لآخر الجلسة)';
+    const rowSkipBtn = $('#ratingRow .btn-skip');
+    if (rowSkipBtn) rowSkipBtn.disabled = isLast;
+  }
+
+  function renderCard() {
+    const s = state.queue[0];
+    if (!s) { finishReview(); return; }
+
+    state.flipped = false;
+    $('#flipCard').classList.remove('is-flipped');
+    $('#ratingRow').classList.remove('is-visible');
+
+    const italianEl = $('#cardItalian'); italianEl.innerHTML = '';
+    renderItalianWords(italianEl, s.italian);
+    $('#cardArabic').textContent = s.arabic;
+
+    const total = state.initialQueue.length;
+    const done = state.ratedCount;
+    $('#progressFill').style.width = (done / total * 100) + '%';
+    const skipSuffix = state.skippedCount ? ` · ⏭️ ${state.skippedCount}` : '';
+    $('#progressText').textContent = `✅ ${done}/${total}${skipSuffix}`;
+
+    updateStarButton(true);
+    updateSkipHeaderButton();
+    Speech.speak(s.italian);
+  }
+
+  function renderItalianWords(container, text) {
+    const parts = String(text).split(/(\s+)/);
+    parts.forEach(part => {
+      if (/^\s+$/.test(part)) { container.appendChild(document.createTextNode(part)); return; }
+      const m = part.match(/^([\p{L}']+)(.*)$/u);
+      if (m) {
+        const [, word, punct] = m;
+        const span = document.createElement('span');
+        span.className = 'word'; span.textContent = word;
+        span.addEventListener('click', ev => { ev.stopPropagation(); openDictionary(word); });
+        container.appendChild(span);
+        if (punct) container.appendChild(document.createTextNode(punct));
+      } else { container.appendChild(document.createTextNode(part)); }
+    });
+  }
+
+  function flipCard() {
+    if (state.flipped) return;
+    state.flipped = true;
+    $('#flipCard').classList.add('is-flipped');
+    $('#ratingRow').classList.add('is-visible');
+  }
+
+  function skipCard() {
+    const s = state.queue[0];
+    if (!s) return;
+    if (state.queue.length <= 1) {
+      toast('هذه آخر بطاقة — قيّمها الآن', 'warn');
+      return;
+    }
+    const current = state.queue.shift();
+    state.queue.push(current);
+    state.skippedCount++;
+    state.skipCounts.set(current.id, (state.skipCounts.get(current.id) || 0) + 1);
+    toast('⏭️ تم تأجيل البطاقة لآخر الجلسة');
+    renderCard();
+  }
+
+  async function rateCard(rating) {
+    if (state.busy) return;
+    const s = state.queue[0];
+    if (!s) return;
+
+    if (rating === 'skip') { skipCard(); return; }
+
+    state.busy = true;
+
+    let patch;
+    if (rating === 'easy') patch = SRS.applyEasy(s);
+    else if (rating === 'medium') patch = SRS.applyMedium(s);
+    else patch = SRS.applyHard(s);
+
+    Object.assign(s, patch);
+    state.session[rating] = (state.session[rating] || 0) + 1;
+
+    resetDailyCounterIfNeeded();
+    state.user.reviewed_today = (state.user.reviewed_today || 0) + 1;
+    bumpStreakIfFirstReviewOfDay();
+
+    setSync('syncing');
+    Promise.all([
+      Store.updateSentence(s.id, patch),
+      Store.saveUser({ streak: state.user.streak, last_review_day: state.user.last_review_day, reviewed_today: state.user.reviewed_today, reviewed_day_key: state.user.reviewed_day_key })
+    ]).then(() => setSync('online')).catch(err => { console.warn(err); setSync('offline'); toast('تعذّر التحديث السحابي', 'warn'); });
+
+    state.queue.shift();
+    state.ratedCount++;
+
+    if (state.queue.length === 0) finishReview();
+    else renderCard();
+
+    setTimeout(() => { state.busy = false; }, 300);
+  }
+
+  function getMostSkippedCard() {
+    let bestId = null, bestCount = 0;
+    state.skipCounts.forEach((count, id) => {
+      if (count > bestCount) { bestCount = count; bestId = id; }
+    });
+    if (!bestId || bestCount === 0) return null;
+    const sentence = state.sentencesById.get(bestId) || state.sentences.find(s => s.id === bestId);
+    return sentence ? { sentence, count: bestCount } : null;
+  }
+
+  function getHardToReviewCards(threshold = 3) {
+    const result = [];
+    state.skipCounts.forEach((count, id) => {
+      if (count >= threshold) {
+        const s = state.sentencesById.get(id) || state.sentences.find(x => x.id === id);
+        if (s) result.push(s);
+      }
+    });
+    return result;
+  }
+
+  function finishReview() {
+    const total = state.initialQueue.length;
+    $('#progressFill').style.width = '100%';
+    $('#progressText').textContent = `✅ ${total}/${total}${state.skippedCount ? ' · ⏭️ ' + state.skippedCount : ''}`;
+
+    const { easy, medium, hard } = state.session;
+    const skipped = state.skippedCount;
+    const mostSkipped = getMostSkippedCard();
+    const hardToReview = getHardToReviewCards();
+
+    $('#summarySub').textContent = `أكملت مراجعة ${total} بطاقة`;
+
+    let statsHtml = `
+      <div class="summary-item total"><span class="v">${total}</span><span class="l">إجمالي البطاقات</span></div>
+      <div class="summary-item total"><span class="v">🔥 ${state.user.streak || 0}</span><span class="l">السلسلة اليومية</span></div>
+      <div class="summary-item easy"><span class="v">${easy}</span><span class="l">سهل</span></div>
+      <div class="summary-item medium"><span class="v">${medium}</span><span class="l">متوسط</span></div>
+      <div class="summary-item hard"><span class="v">${hard}</span><span class="l">صعب</span></div>
+      ${skipped > 0 ? `<div class="summary-item skip"><span class="v">⏭️ ${skipped}</span><span class="l">مرات التخطي</span></div>` : ''}
+      <div class="summary-item total"><span class="v">${state.user.reviewed_today || 0}</span><span class="l">راجعت اليوم</span></div>
+    `;
+
+    if (mostSkipped) {
+      const preview = mostSkipped.sentence.italian.length > 50
+        ? mostSkipped.sentence.italian.substring(0, 50) + '…'
+        : mostSkipped.sentence.italian;
+      statsHtml += `<div class="summary-item skip" style="grid-column:1/-1; text-align:center;"><span class="v">⏭️ ${mostSkipped.count}×</span><span class="l">الأكثر تخطيًا: ${escapeHtml(preview)}</span></div>`;
+    }
+
+    $('#summaryStats').innerHTML = statsHtml;
+
+    const btnReviewHard = $('#btnReviewHard');
+    if (hardToReview.length > 0) {
+      btnReviewHard.style.display = 'inline-flex';
+      btnReviewHard.textContent = `🔁 أعد مراجعة الأصعب (${hardToReview.length})`;
+      btnReviewHard.onclick = () => startReview(hardToReview);
+    } else {
+      btnReviewHard.style.display = 'none';
+      btnReviewHard.onclick = null;
+    }
+
+    showView('summary');
+    renderDashboard();
+  }
+
+  async function toggleStar(id) {
+    const s = state.sentencesById.get(id) || state.sentences.find(x => x.id === id);
+    if (!s) return;
+    s.is_starred = !s.is_starred;
+    setSync('syncing');
+    try {
+      await Store.updateSentence(id, { is_starred: s.is_starred });
+      setSync('online');
+      toast(s.is_starred ? 'تم التمييز ⭐' : 'أُزيل التمييز', 'ok');
+    } catch (err) {
+      console.error(err); setSync('offline'); toast('تعذّر التحديث', 'err');
+      s.is_starred = !s.is_starred;
+    }
+    if (state.listMode) renderList();
+    renderDashboard();
+  }
+
+  function openEditPopup(sentence) {
+    if (!sentence) return;
+    const originalItalian = sentence.italian || '';
+    const originalArabic = sentence.arabic || '';
+
+    $('#popupOverlay').classList.add('is-open');
+    $('#popupDict').innerHTML = `
+      <div class="dict-popup" data-type="form">
+        <div class="dict-header">
+          <div class="dict-header-left">
+            <span class="dict-type-icon">✏️</span>
+            <span class="dict-type-label">تعديل الجملة</span>
+          </div>
+          <button class="btn-icon" data-close>✕</button>
+        </div>
+        <div class="dict-body">
+          <label class="dict-field-label">الجملة الإيطالية</label>
+          <input class="input" id="editItalian" dir="ltr" value="${escapeHtml(originalItalian)}" />
+          <label class="dict-field-label">الترجمة العربية</label>
+          <textarea class="input" id="editArabic" rows="2">${escapeHtml(originalArabic)}</textarea>
+          <button class="btn btn-secondary" id="editSave" style="margin-top:8px;">💾 حفظ التعديلات</button>
+        </div>
+      </div>`;
+
+    const tryClose = () => {
+      const curItalian = ($('#editItalian')?.value || '').trim();
+      const curArabic = ($('#editArabic')?.value || '').trim();
+      const isDirty = (curItalian !== originalItalian.trim()) || (curArabic !== originalArabic.trim());
+      if (isDirty && !confirm('لديك تعديلات غير محفوظة. إغلاق دون حفظ؟')) return;
+      closeDictionary();
+    };
+
+    $('#popupDict').querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', tryClose));
+
+    const overlay = $('#popupOverlay');
+    const backdropHandler = (e) => {
+      if (e.target === overlay) { e.stopPropagation(); tryClose(); }
+    };
+    overlay.addEventListener('click', backdropHandler, { once: true });
+
+    $('#editSave').addEventListener('click', async () => {
+      const italian = $('#editItalian').value.trim();
+      const arabic = $('#editArabic').value.trim();
+      if (!italian || !arabic) { toast('أكمل الحقلين', 'err'); return; }
+      setSync('syncing');
+      try {
+        await Store.updateSentence(sentence.id, { italian, arabic });
+        sentence.italian = italian;
+        sentence.arabic = arabic;
+        setSync('online');
+        toast('تم حفظ التعديلات ✓', 'ok');
+        closeDictionary();
+        if (state.listMode) renderList();
+        renderDashboard();
+        if ($('#view-review').classList.contains('is-active') && state.queue[0] && state.queue[0].id === sentence.id) {
+          renderCard();
+        }
+      } catch (err) {
+        console.error(err); setSync('offline'); toast('فشل الحفظ', 'err');
+      }
+    });
+    setTimeout(() => { const el = $('#editItalian'); if (el) el.focus(); }, 100);
+  }
+
+  let currentDictContext = null;
+
+  function normalizeEntry(raw) {
+    if (!raw) return null;
+    if (typeof raw === 'object' && (raw.meaning || raw.type || raw.summary)) {
+      return {
+        word: raw.word || '', lemma: raw.lemma || '',
+        type: raw.type || 'word',
+        meaning: raw.meaning || '', summary: raw.summary || ''
+      };
+    }
+    if (typeof raw === 'string') return { word: '', lemma: '', type: 'word', meaning: raw, summary: '' };
+    return null;
+  }
+
+  async function openDictionary(original) {
+    const key = Store.normalizeKey(original);
+    if (!key) return;
+
+    const thisContext = { key, original };
+    currentDictContext = thisContext;
+
+    if (state.verbFormsIndex.has(key)) {
+      const found = state.verbFormsIndex.get(key);
+      $('#popupOverlay').classList.add('is-open');
+      if (found.source === 'manual') renderVerbCard(found.verb, original);
+      else renderDictVerbCard(found.entry, original, found.key);
+      return;
+    }
+
+    renderDictLoading(original);
+    $('#popupOverlay').classList.add('is-open');
+
+    let entry = normalizeEntry(state.dict[key]);
+    if (!entry) {
+      let fresh = null;
+      try {
+        fresh = await Store.getDictionaryEntry(key);
+      } catch (e) { console.warn('[Dict] fetch:', e); }
+
+      if (currentDictContext !== thisContext) {
+        console.info('[Dict] stale response ignored (context changed)');
+        return;
+      }
+
+      const norm = normalizeEntry(fresh);
+      if (norm) { state.dict[key] = Object.assign({ id: key }, norm); entry = norm; }
+    }
+
+    if (!entry) renderDictForm(original, null);
+    else if (entry.type === 'verb') renderDictVerbCard(entry, original, key);
+    else renderDictEntry(entry);
+  }
+
+  function closeDictionary() {
+    $('#popupOverlay').classList.remove('is-open');
+    currentDictContext = null;
+  }
+
+  function renderDictLoading(word) {
+    $('#popupDict').innerHTML = `
+      <div class="dict-popup" data-type="loading">
+        <div class="dict-header">
+          <div class="dict-header-left"><span class="dict-type-icon">⏳</span><span class="dict-type-label">جارٍ البحث</span></div>
+          <button class="btn-icon" data-close>✕</button>
+        </div>
+        <div class="dict-header-main"><h4 class="dict-word" dir="ltr">${escapeHtml(word)}</h4></div>
+        <div class="dict-body"><div class="dict-loading">جارٍ البحث في القاموس…</div></div>
+      </div>`;
+    $('#popupDict').querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeDictionary));
+  }
+
+  function renderVerbCard(verb, clickedForm) {
+    const rows = ['io', 'tu', 'lui', 'noi', 'voi', 'loro'];
+    const labels = { io: 'io', tu: 'tu', lui: 'lui/lei', noi: 'noi', voi: 'voi', loro: 'loro' };
+    const clickNorm = Store.normalizeKey(clickedForm);
+
+    const matchForm = (f) => {
+      if (!f) return false;
+      if (Store.normalizeKey(f) === clickNorm) return true;
+      const last = String(f).trim().split(/\s+/).pop();
+      return Store.normalizeKey(last) === clickNorm;
+    };
+
+    const present = verb.present || {};
+    const conjRows = rows.map(r => {
+      const form = present[r] || '';
+      const active = matchForm(form);
+      return `<div class="verb-conj-row${active ? ' active' : ''}">
+        <span class="verb-pronoun">${labels[r]}</span>
+        <span class="verb-form" dir="ltr">${escapeHtml(form) || '—'}</span>
+      </div>`;
+    }).join('');
+
+    let reflexiveHtml = '';
+    if (verb.present_reflexive && verb.reflexive_infinitive) {
+      const rp = verb.present_reflexive;
+      const rRows = rows.map(r => {
+        const form = rp[r] || '';
+        const active = matchForm(form);
+        return `<div class="verb-conj-row${active ? ' active' : ''}">
+          <span class="verb-pronoun">${labels[r]}</span>
+          <span class="verb-form" dir="ltr">${escapeHtml(form) || '—'}</span>
+        </div>`;
+      }).join('');
+      reflexiveHtml = `
+        <div class="verb-reflexive-block">
+          <div class="verb-section-label">🔄 الصيغة المنعكسة: <strong dir="ltr" style="margin-inline-start:6px;">${escapeHtml(verb.reflexive_infinitive)}</strong></div>
+          ${verb.reflexive_meaning ? `<div class="verb-reflexive-meaning">${escapeHtml(verb.reflexive_meaning)}</div>` : ''}
+          <div class="verb-conj-table">${rRows}</div>
+        </div>`;
+    }
+
+    $('#popupDict').innerHTML = `
+      <div class="dict-popup" data-type="verb">
+        <div class="dict-header">
+          <div class="dict-header-left"><span class="dict-type-icon">⚡</span><span class="dict-type-label">فعل</span></div>
+          <button class="btn-icon" data-close>✕</button>
+        </div>
+        <div class="dict-header-main"><h4 class="dict-word" dir="ltr">${escapeHtml(verb.infinitive)}</h4></div>
+        <div class="dict-body">
+          <div class="dict-meaning">${escapeHtml(verb.meaning || '—')}</div>
+          <div class="verb-conj-block">
+            <div class="verb-section-label">📝 المضارع (Presente)</div>
+            <div class="verb-conj-table">${conjRows}</div>
+          </div>
+          ${reflexiveHtml}
+        </div>
+      </div>`;
+
+    $('#popupDict').querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeDictionary));
+  }
+
+  function renderDictVerbCard(entry, clickedForm, entryKey) {
+    const clickNorm = Store.normalizeKey(clickedForm);
+    const sections = parseVerbSummary(entry.summary);
+
+    let sectionsHtml = '';
+    if (sections.length > 0) {
+      sectionsHtml = sections.map(section => {
+        const hasMatch = section.forms.some(f => Store.normalizeKey(f) === clickNorm);
+        const chipsHtml = section.forms.map(f => {
+          const active = Store.normalizeKey(f) === clickNorm;
+          return `<span class="verb-form-chip${active ? ' active' : ''}" dir="ltr">${escapeHtml(f)}</span>`;
+        }).join('');
+        return `
+          <div class="verb-tense-block${hasMatch ? ' has-match' : ''}">
+            <div class="verb-tense-label">${escapeHtml(section.label)}</div>
+            <div class="verb-tense-chips">${chipsHtml}</div>
+          </div>`;
+      }).join('');
+    } else if (entry.summary) {
+      sectionsHtml = `<div class="verb-tense-block"><div class="verb-tense-label">📝 التصريفات</div><div class="summary-text">${escapeHtml(entry.summary)}</div></div>`;
+    }
+
+    const lemmaHtml = (entry.lemma && entry.lemma !== entry.word)
+      ? `<div class="dict-lemma" dir="ltr">${escapeHtml(entry.lemma)}</div>` : '';
+
+    $('#popupDict').innerHTML = `
+      <div class="dict-popup" data-type="verb">
+        <div class="dict-header">
+          <div class="dict-header-left"><span class="dict-type-icon">⚡</span><span class="dict-type-label">فعل</span></div>
+          <button class="btn-icon" data-close>✕</button>
+        </div>
+        <div class="dict-header-main">
+          <h4 class="dict-word" dir="ltr">${escapeHtml(entry.word || entry.lemma || clickedForm)}</h4>
+          ${lemmaHtml}
+        </div>
+        <div class="dict-body">
+          <div class="dict-meaning">${escapeHtml(entry.meaning || '—')}</div>
+          ${sectionsHtml || '<div style="color:var(--text-soft);text-align:center;padding:12px;font-size:13px;">لا توجد تصريفات محفوظة</div>'}
+          <button class="btn-dict-edit" data-edit>✏️ تعديل البيانات</button>
+        </div>
+      </div>`;
+
+    $('#popupDict').querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeDictionary));
+    const editBtn = $('#popupDict').querySelector('[data-edit]');
+    if (editBtn) editBtn.addEventListener('click', () => {
+      const orig = currentDictContext ? currentDictContext.original : (entry.word || clickedForm);
+      renderDictForm(orig, entry);
+    });
+  }
+
+  function renderDictEntry(entry) {
+    const type = entry.type || 'word';
+    const meta = {
+      verb:        { label: 'فعل',    icon: '⚡' },
+      preposition: { label: 'حرف جر', icon: '🔗' },
+      article:     { label: 'أداة',   icon: '📎' },
+      word:        { label: 'كلمة',   icon: '📖' }
+    }[type] || { label: 'كلمة', icon: '📖' };
+
+    let summaryHtml = '';
+    if (entry.summary) {
+      if (type === 'preposition' || type === 'article') {
+        summaryHtml = `<div class="dict-summary dict-summary-usage"><div class="summary-label">💡 القواعد والاستخدام</div><div class="summary-text">${escapeHtml(entry.summary)}</div></div>`;
+      } else {
+        summaryHtml = `<div class="dict-summary dict-summary-note"><div class="summary-label">📝 ملاحظات</div><div class="summary-text">${escapeHtml(entry.summary)}</div></div>`;
+      }
+    }
+
+    const lemmaHtml = entry.lemma && entry.lemma !== entry.word
+      ? `<div class="dict-lemma" dir="ltr">${escapeHtml(entry.lemma)}</div>` : '';
+
+    $('#popupDict').innerHTML = `
+      <div class="dict-popup" data-type="${type}">
+        <div class="dict-header">
+          <div class="dict-header-left">
+            <span class="dict-type-icon">${meta.icon}</span>
+            <span class="dict-type-label">${meta.label}</span>
+          </div>
+          <button class="btn-icon" data-close>✕</button>
+        </div>
+        <div class="dict-header-main">
+          <h4 class="dict-word" dir="ltr">${escapeHtml(entry.word || (currentDictContext ? currentDictContext.original : '') || '')}</h4>
+          ${lemmaHtml}
+        </div>
+        <div class="dict-body">
+          <div class="dict-meaning">${escapeHtml(entry.meaning || '— لا يوجد معنى —')}</div>
+          ${summaryHtml}
+          <button class="btn-dict-edit" data-edit>✏️ تعديل البيانات</button>
+        </div>
+      </div>`;
+
+    $('#popupDict').querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeDictionary));
+    const editBtn = $('#popupDict').querySelector('[data-edit]');
+    if (editBtn) editBtn.addEventListener('click', () => {
+      const orig = currentDictContext ? currentDictContext.original : entry.word;
+      renderDictForm(orig, entry);
+    });
+  }
+
+  function renderDictForm(original, existing) {
+    const isEdit = !!existing;
+    const e = existing || { word: original, lemma: '', type: 'word', meaning: '', summary: '' };
+
+    $('#popupDict').innerHTML = `
+      <div class="dict-popup" data-type="form">
+        <div class="dict-header">
+          <div class="dict-header-left">
+            <span class="dict-type-icon">${isEdit ? '✏️' : '➕'}</span>
+            <span class="dict-type-label">${isEdit ? 'تعديل الكلمة' : 'كلمة جديدة'}</span>
+          </div>
+          <button class="btn-icon" data-close>✕</button>
+        </div>
+        <div class="dict-header-main"><h4 class="dict-word" dir="ltr">${escapeHtml(original)}</h4></div>
+        <div class="dict-body">
+          <label class="dict-field-label">نوع الكلمة</label>
+          <select class="input" id="dictType">
+            <option value="word" ${e.type === 'word' ? 'selected' : ''}>كلمة عادية</option>
+            <option value="verb" ${e.type === 'verb' ? 'selected' : ''}>فعل (Verb)</option>
+            <option value="preposition" ${e.type === 'preposition' ? 'selected' : ''}>حرف جر (Preposition)</option>
+            <option value="article" ${e.type === 'article' ? 'selected' : ''}>أداة (Article)</option>
+          </select>
+          <label class="dict-field-label">المصدر / الجذر (اختياري)</label>
+          <input class="input" id="dictLemma" dir="ltr" placeholder="e.g. mangiare" value="${escapeHtml(e.lemma || '')}" />
+          <label class="dict-field-label">المعنى</label>
+          <input class="input" id="dictMeaning" placeholder="المعنى بالعربية" value="${escapeHtml(e.meaning || '')}" />
+          <label class="dict-field-label">ملخص / تصريفات / قواعد الاستخدام</label>
+          <textarea class="input" id="dictSummary" rows="4" placeholder="مثال للفعل: المضارع: io mangio… | الماضي: io ho mangiato… — لحرف الجر: يُستخدم لل…">${escapeHtml(e.summary || '')}</textarea>
+          <button class="btn btn-secondary" id="dictSave" style="margin-top:8px;">💾 حفظ في السحابة</button>
+        </div>
+      </div>`;
+
+    $('#popupDict').querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeDictionary));
+    $('#dictSave').addEventListener('click', saveDictForm);
+  }
+
+  async function saveDictForm() {
+    if (!currentDictContext) return;
+    const type = $('#dictType').value;
+    const lemma = $('#dictLemma').value.trim();
+    const meaning = $('#dictMeaning').value.trim();
+    const summary = $('#dictSummary').value.trim();
+    if (!meaning) { toast('أدخل المعنى على الأقل', 'err'); return; }
+
+    const { key, original } = currentDictContext;
+    const entry = { word: original, lemma: lemma || original, type, meaning, summary };
+
+    setSync('syncing');
+    try {
+      await Store.saveDictionaryEntry(key, entry);
+      state.dict[key] = Object.assign({ id: key }, entry);
+      buildVerbFormsIndex();
+      setSync('online');
+      toast('تم الحفظ في السحابة ✓', 'ok');
+      if (type === 'verb') renderDictVerbCard(entry, original, key);
+      else renderDictEntry(entry);
+    } catch (err) {
+      console.error(err); setSync('offline'); toast('فشل الحفظ', 'err');
+    }
+  }
+
+  function openList(mode) {
+    state.listMode = mode;
+    const titles = { today: 'المراجعة اليومية', mistakes: 'الجمل الصعبة', frozen: 'المجمّدة', all: 'كل الجمل', starred: 'الجمل المميزة ⭐' };
+    $('#listTitle').textContent = titles[mode] || 'القائمة';
+
+    const actions = $('#listActions'); actions.innerHTML = '';
+    if (mode === 'all' && state.sentences.length > 0) {
+      const copyBtn = document.createElement('button');
+      copyBtn.className = 'btn btn-secondary';
+      copyBtn.textContent = '📋 نسخ الكل';
+      copyBtn.addEventListener('click', copyAll);
+
+      const dlBtn = document.createElement('button');
+      dlBtn.className = 'btn btn-secondary';
+      dlBtn.textContent = '⬇️ تحميل .txt';
+      dlBtn.addEventListener('click', downloadAll);
+
+      actions.appendChild(copyBtn); actions.appendChild(dlBtn);
+    }
+    renderList(); showView('list');
+  }
+
+  function renderList() {
+    const mode = state.listMode, wrap = $('#listContent');
+    if (!mode) return;
+    let items = [];
+    if (mode === 'today') items = dueToday().slice();
+    if (mode === 'mistakes') items = mistakesList().slice();
+    if (mode === 'frozen') items = frozenList().slice();
+    if (mode === 'all') items = state.sentences.slice();
+    if (mode === 'starred') items = state.sentences.filter(s => s.is_starred).slice();
+
+    if (items.length === 0) {
+      const msgs = { today: 'لا توجد بطاقات مستحقة اليوم', mistakes: 'لا توجد جمل صعبة 🎉', frozen: 'لا توجد جمل مجمّدة', all: 'لم تُضف أي جملة بعد', starred: 'لا توجد جمل مميزة ⭐' };
+      wrap.innerHTML = `<div class="empty-state"><span class="em">📭</span>${msgs[mode] || ''}</div>`;
+      return;
+    }
+
+    if (mode === 'all' || mode === 'starred') items.sort((a, b) => (b.created_at || 0) - (a.created_at || 0));
+    else if (mode === 'today') items.sort((a, b) => (a.next_review || 0) - (b.next_review || 0));
+
+    wrap.innerHTML = '';
+    items.forEach(s => wrap.appendChild(buildListItem(s, mode)));
+  }
+
+  function buildListItem(s, mode) {
+    const el = document.createElement('div');
+    el.className = 'list-item';
+    el.innerHTML = `
+      <div class="list-item-it">${escapeHtml(s.italian)}</div>
+      <div class="list-item-ar">${escapeHtml(s.arabic)}</div>
+      <div class="list-item-meta">
+        ${s.is_starred ? '<span class="badge starred">⭐ مميزة</span>' : ''}
+        ${s.is_frozen ? '<span class="badge frozen">❄️ مجمّدة</span>' : ''}
+        ${s.in_mistake_bank ? '<span class="badge hard">⚠️ صعبة</span>' : ''}
+        ${s.easy_streak ? `<span class="badge easy">سهل ×${s.easy_streak}</span>` : ''}
+        ${s.medium_streak ? `<span class="badge medium">متوسط ×${s.medium_streak}</span>` : ''}
+        <span class="badge">${fmtDate(s.next_review)}</span>
+      </div>
+      <div class="list-item-actions"></div>`;
+
+    const actions = el.querySelector('.list-item-actions');
+    const mk = (label, cls, fn) => {
+      const b = document.createElement('button');
+      b.className = 'mini-btn ' + (cls || '');
+      b.textContent = label;
+      b.addEventListener('click', fn);
+      return b;
+    };
+
+    if (mode === 'mistakes') {
+      actions.appendChild(mk('✓ صح', 'ok', () => markCorrect(s.id)));
+      actions.appendChild(mk('✗ خطأ', 'no', () => markWrong(s.id)));
+      actions.appendChild(mk('❄️ تجميد', 'freeze', () => freezeSentence(s.id)));
+    } else if (mode === 'frozen') {
+      actions.appendChild(mk('♻️ إلغاء التجميد', 'freeze', () => unfreezeSentence(s.id)));
+      actions.appendChild(mk('🗑️ حذف', 'danger', () => removeSentence(s.id)));
+    } else if (mode === 'all' || mode === 'starred') {
+      actions.appendChild(mk('❄️ تجميد', 'freeze', () => freezeSentence(s.id)));
+      actions.appendChild(mk('🗑️ حذف', 'danger', () => removeSentence(s.id)));
+    } else if (mode === 'today') {
+      actions.appendChild(mk('❄️ تجميد', 'freeze', () => freezeSentence(s.id)));
+    }
+
+    actions.appendChild(mk('🔊', '', () => Speech.speak(s.italian)));
+    actions.appendChild(mk('✏️', 'edit', () => openEditPopup(s)));
+    actions.appendChild(mk(s.is_starred ? '⭐' : '☆', s.is_starred ? 'star-on' : '', () => toggleStar(s.id)));
+
+    return el;
+  }
+
+  function fmtDate(ts) {
+    if (!ts) return '—';
+    const d = new Date(ts);
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const target = new Date(d); target.setHours(0, 0, 0, 0);
+    const diff = Math.round((target - today) / 86400000);
+    if (diff === 0) return 'اليوم';
+    if (diff === -1) return 'أمس';
+    if (diff === 1) return 'غدًا';
+    if (diff > 1 && diff <= 7) return `بعد ${diff} أيام`;
+    if (diff < 0) return `متأخرة ${Math.abs(diff)} يوم`;
+    return `${d.getDate()}/${d.getMonth() + 1}`;
+  }
+
+  async function updateAndRefresh(id, patch) {
+    const s = state.sentencesById.get(id) || state.sentences.find(x => x.id === id);
+    if (!s) return;
+    Object.assign(s, patch);
+    setSync('syncing');
+    try { await Store.updateSentence(id, patch); setSync('online'); }
+    catch (err) { console.error(err); setSync('offline'); toast('تعذّر التحديث السحابي', 'err'); }
+    renderList(); renderDashboard();
+  }
+  async function markCorrect(id) {
+    const s = state.sentencesById.get(id) || state.sentences.find(x => x.id === id);
+    if (!s) return;
+    toast('خرجت من قائمة الصعبة ✓', 'ok');
+    await updateAndRefresh(id, SRS.applyCorrectFromMistakes(s));
+  }
+  async function markWrong(id) {
+    const s = state.sentencesById.get(id) || state.sentences.find(x => x.id === id);
+    if (!s) return;
+    toast('ستبقى في القائمة الصعبة');
+    await updateAndRefresh(id, SRS.applyWrongFromMistakes(s));
+  }
+  async function freezeSentence(id) { await updateAndRefresh(id, { is_frozen: true }); toast('تم التجميد ❄️'); }
+  async function unfreezeSentence(id) { await updateAndRefresh(id, { is_frozen: false }); toast('تم إلغاء التجميد ♻️', 'ok'); }
+  async function removeSentence(id) {
+    if (!confirm('حذف الجملة نهائيًا من Firebase؟')) return;
+    setSync('syncing');
+    try {
+      await Store.deleteSentence(id);
+      state.sentences = state.sentences.filter(x => x.id !== id);
+      state.sentencesById.delete(id);
+      setSync('online'); toast('تم الحذف');
+    }
+    catch (err) { console.error(err); setSync('offline'); toast('تعذّر الحذف', 'err'); }
+    renderList(); renderDashboard();
+  }
+
+  function serializeAll() {
+    return state.sentences.slice().sort((a, b) => (b.created_at || 0) - (a.created_at || 0)).map(s => `${s.italian}\t${s.arabic}`).join('\n');
+  }
+  async function copyAll() {
+    const text = serializeAll();
+    try { await navigator.clipboard.writeText(text); toast('تم النسخ ✓', 'ok'); }
+    catch (_) {
+      const ta = document.createElement('textarea'); ta.value = text;
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); toast('تم النسخ ✓', 'ok'); } catch (e) { toast('فشل النسخ', 'err'); }
+      ta.remove();
+    }
+  }
+  function downloadAll() {
+    const text = serializeAll();
+    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const t = new Date();
+    const key = `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`;
+    a.href = url; a.download = `imparo-backup-${key}.txt`;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+    toast('تم التحميل ✓', 'ok');
+  }
+
+  function bindEvents() {
+    $('#btnStartReview').addEventListener('click', () => startReview());
+    $('#btnStartStarredReview').addEventListener('click', () => startReview('starred'));
+    $('#btnQuickAdd').addEventListener('click', quickAdd);
+    $('#inputArabic').addEventListener('keydown', e => { if (e.key === 'Enter') quickAdd(); });
+
+    $$('.list-btn').forEach(btn => btn.addEventListener('click', () => openList(btn.dataset.list)));
+
+    $('#btnExitReview').addEventListener('click', () => {
+      if (confirm('إنهاء الجلسة؟ ما تم تقييمه محفوظ.')) { showView('dashboard'); renderDashboard(); }
+    });
+    $('#flipCard').addEventListener('click', flipCard);
+    $('#btnSpeak').addEventListener('click', e => {
+      e.stopPropagation();
+      const s = state.queue[0]; if (s) Speech.speak(s.italian);
+    });
+    $$('.btn-rating').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); rateCard(b.dataset.rating); }));
+
+    $('#btnSkipHeader').addEventListener('click', e => {
+      e.stopPropagation();
+      skipCard();
+    });
+
+    $('#btnStarCurrent').addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const s = state.queue[0];
+      if (!s) return;
+      await toggleStar(s.id);
+      updateStarButton();
+    });
+
+    $('#btnBackHome').addEventListener('click', () => { showView('dashboard'); renderDashboard(); });
+    $('#btnBackList').addEventListener('click', () => { showView('dashboard'); renderDashboard(); });
+
+    $('#popupOverlay').addEventListener('click', e => {
+      if (e.target !== $('#popupOverlay')) return;
+      const closeBtn = $('#popupDict').querySelector('[data-close]');
+      if (closeBtn) closeBtn.click();
+      else closeDictionary();
+    });
+
+    setInterval(() => { if ($('#view-dashboard').classList.contains('is-active')) renderDashboard(); }, 60 * 1000);
+
+    const updateOnline = () => setSync(navigator.onLine ? 'online' : 'offline');
+    window.addEventListener('online', updateOnline);
+    window.addEventListener('offline', updateOnline);
+    updateOnline();
+
+    window.addEventListener('beforeunload', () => Speech.cancel());
+  }
+
+  function showError(msg) {
+    console.error('[Imparo] showError:', msg);
+    $('#bootScreen').hidden = true;
+    $('#errorScreen').hidden = false;
+    $('#errorMessage').textContent = msg || 'خطأ غير معروف';
+  }
+  function setBootText(msg) { const el = $('#bootText'); if (el) el.textContent = msg; }
+
+  async function boot() {
+    try {
+      await Store.init(setBootText);
+      Speech.setFallbackHandler(msg => toast(msg, 'warn'));
+
+      setBootText('جارٍ تحميل الجمل…');
+      const [user, sentences, dict, verbs] = await Promise.all([
+        Store.loadUser(),
+        Store.loadSentences(),
+        Store.loadDictionary(),
+        Store.loadVerbs()
+      ]);
+
+      state.user = user;
+      state.sentences = sentences;
+      state.sentencesById = new Map(sentences.map(s => [s.id, s]));
+      state.dict = dict;
+      state.verbs = verbs;
+
+      buildVerbFormsIndex();
+      resetDailyCounterIfNeeded();
+      bindEvents();
+      renderDashboard();
+
+      $('#bootScreen').hidden = true;
+      $('#appRoot').hidden = false;
+      setSync('online');
+
+      const dictVerbsCount = Object.values(dict).filter(e => e && e.type === 'verb').length;
+      console.info('[Imparo v2.4-Friend] جاهز. USER_ID =', Store.getUid(),
+        '| الجمل:', sentences.length,
+        '| مميزة:', sentences.filter(s => s.is_starred).length,
+        '| أفعال يدوية:', verbs.length,
+        '| أفعال قاموس:', dictVerbsCount,
+        '| صيغ مفهرسة:', state.verbFormsIndex.size);
+    } catch (err) {
+      console.error('[Imparo] فشل التهيئة:', err);
+      const msg = err && err.message ? err.message : (err && err.code ? `خطأ (${err.code})` : 'خطأ غير معروف — راجع Console');
+      showError(msg);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', boot);
+})();
+</script>
+</body>
+</html>
